@@ -3,6 +3,7 @@
 
 ##### Call submission_gen(df, filename, cut_off = 0.5) to generate submission
 ##### file from a dataframe with ImageId and ImageLabel columns
+##### ImageLabel can be either 0-1 indicator or sequentially integer-labeled
 
 from skimage.morphology import label # label regions
 import numpy as np
