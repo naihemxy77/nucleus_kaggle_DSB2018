@@ -27,7 +27,8 @@ def read_image(image_id, pattern, space="rgb"):
 
 def read_image_labels(image_id, pattern):
     mask_file = pattern.format(image_id)
-    masks = skimage.io.imread_collection(mask_file).concatenate()    
+    masks = skimage.io.imread_collection(mask_file).concatenate()   
+    #labels = np.sum(masks,0)//255
     num_masks = masks.shape[0]
     labels = np.zeros((masks.shape[1], masks.shape[2]), np.uint16)
     for index in range(0, num_masks):
@@ -71,6 +72,7 @@ def data_process(datatype='train',label=True,cluster=True,stage='stage1'):
     HSV_CLUSTER = "hsv_cluster"
     HSV_DOMINANT = "hsv_dominant"
     # Load stage 1 image identifiers.
+    print('Getting '+datatype+' images ...')
     train_image_ids = image_ids_in(root_dir)
     details = get_images_details(train_image_ids, label, img_pattern, mask_pattern)
     if label:
@@ -79,6 +81,7 @@ def data_process(datatype='train',label=True,cluster=True,stage='stage1'):
         COLS = [IMAGE_ID, IMAGE, HSV_DOMINANT]
     df = pd.DataFrame(details, columns=COLS)
     if cluster:
+        print('Clustering ...')
         X = (pd.DataFrame(df[HSV_DOMINANT].values.tolist())).as_matrix()
         kmeans = KMeans(n_clusters=3).fit(X)
         clusters = kmeans.predict(X)
@@ -86,3 +89,8 @@ def data_process(datatype='train',label=True,cluster=True,stage='stage1'):
         df[HSV_CLUSTER] = clusters
         return df, centroids
     else: return df
+
+#test_cluster = []
+#for i in range(test_df.shape[0]):
+#    tmp=np.sum((test_df.loc[i,'hsv_dominant']-centroids)**2,axis=1)
+#    test_cluster.append(np.argmin(tmp))
