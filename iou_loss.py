@@ -5,6 +5,9 @@
 ##### at least contains the column of 'ImageId'; with index to be a 
 ##### a list of df indexes corresponding to predicted masks
 
+##Input masks can be either 0-1 indicator, or sequentially integer-labeled,
+##or a list with each element just contains one nuclei with 0-1 indicator.
+
 import skimage
 from skimage.morphology import label # label regions
 import numpy as np
