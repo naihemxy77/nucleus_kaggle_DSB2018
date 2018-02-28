@@ -37,9 +37,15 @@ def submission_gen(df, filename, cut_off = 0.5):
     Generate a submission csv file from input dataframe df
     df should at least contains column ImageID and ImageLabel
     '''
+    print('Generating submission file ...')
     out_pred_list = []
     for _,row in df.iterrows():
-        pred_encode = list(prob_to_rles(row['ImageLabel'], cut_off))
+        if np.unique(row['ImageLabel']).shape[0] < 3:
+            pred_encode = list(prob_to_rles(row['ImageLabel'], cut_off))
+        else:
+            pred_encode = []
+            for i in range(row['ImageLabel'].max()):
+                pred_encode.append(rle_encoding(row['ImageLabel']==i+1))
         for nuclei_code in pred_encode:
             out_pred_list+=[dict(ImageId=row['ImageId'], 
                              EncodedPixels = ' '.join(np.array(nuclei_code).astype(str)))]
@@ -49,7 +55,7 @@ def submission_gen(df, filename, cut_off = 0.5):
 ##A simple test, uncomment if to try
 #a1=np.array([[0,0,1],[1,0,1],[0,0,1]])
 #a2=np.array([[1,0,0],[0,0,1],[0,1,0]])
-#a3=np.array([[0,0,1],[1,0,0],[1,1,0]])
+#a3=np.array([[0,0,2],[1,0,0],[1,1,0]])
 #x=[{'ImageId':'a1','ImageLabel':a1},{'ImageId':'a2','ImageLabel':a2},{'ImageId':'a3','ImageLabel':a3}]
 #x=pd.DataFrame.from_dict(x)
 #submission_gen(x, 'small_example')
