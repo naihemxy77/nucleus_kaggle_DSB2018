@@ -3,7 +3,8 @@ import numpy as np
 import pandas as pd 
 import os
 from matplotlib import pyplot as plt
-
+from matplotlib import colors
+from matplotlib import cm
 from skimage.morphology import label,binary_dilation,binary_closing,binary_erosion,binary_opening,\
                                 disk,convex_hull_image,skeletonize,watershed,remove_small_objects
 from skimage.feature import peak_local_max
@@ -33,20 +34,34 @@ def getLabeled(lbimg,lbval): ### extract object with specified label value
     tmp[np.where(lbimg!=lbval)]=0
     tmp[np.where(lbimg==lbval)]=1
     return tmp
-def splitDotts(mask): ### split the dotts clinging together
-    if np.sum(mask)<40:
-        return mask
+#def splitDotts(mask): ### split the dotts clinging together
+#    if np.sum(mask)<40:
+#        return mask
+#    maskConv = convex_hull_image(mask)
+#    maskA = maskConv-mask
+#    maskA1 = tinyDottsRemove(maskA)
+#    maskA2 = binary_closing(binary_dilation(skeletonize(maskA1),selem=disk(4)),selem=disk(3))
+#    maskA3 = binary_dilation(imgToMask(skeletonize(maskA2)+maskA1),selem=disk(1))
+#    maskA4 = imgToMask(mask-maskA3)
+#    maskA5 = tinyDottsRemove(maskA4)
+#    #local_maxi = peak_local_max(maskA5, indices=False, footprint=np.ones((10, 10)),labels=mask)
+#    markers = ndi.label(maskA5)[0]
+#    labels = watershed(-mask, markers, mask=mask)
+#    return labels
+
+def nucleiSplit(mask): ## a much better version, and it's able to split nuclei that have long attach edge
     maskConv = convex_hull_image(mask)
-    maskA = maskConv-mask
-    maskA1 = tinyDottsRemove(maskA)
-    maskA2 = binary_closing(binary_dilation(skeletonize(maskA1),selem=disk(4)),selem=disk(3))
-    maskA3 = binary_dilation(imgToMask(skeletonize(maskA2)+maskA1),selem=disk(1))
-    maskA4 = imgToMask(mask-maskA3)
-    maskA5 = tinyDottsRemove(maskA4)
-    #local_maxi = peak_local_max(maskA5, indices=False, footprint=np.ones((10, 10)),labels=mask)
-    markers = ndi.label(maskA5)[0]
+    maskB = tinyDottsRemove(maskConv-mask)
+    while(np.max(label(maskB))>1):
+        maskB = binary_closing(binary_dilation(maskB,selem=disk(1)),selem=disk(2))
+        pass
+    maskC = binary_dilation(skeletonize(maskB),selem=disk(1))
+    maskD = tinyDottsRemove(binary_erosion(imgToMask(binary_dilation(maskConv,selem=disk(1))+(-1)*maskC),selem=disk(1)))
+    maskE = binary_opening(maskD,selem=disk(1))
+    markers = ndi.label(maskE)[0]
     labels = watershed(-mask, markers, mask=mask)
-    return labels
+    return labels  
+
 def valset(labelimg): ## label values used
     vst = set(labelimg.ravel())
     vst.remove(0)
@@ -70,7 +85,8 @@ def reLabel(maskAll,minimum=5): ### the main dish
     k = 1
     for i in vst:
         lb = getLabeled(lbimg=mask0,lbval=i)
-        tmpMask = splitDotts(lb)
+        ##tmpMask = splitDotts(lb)
+        tmpMask = nucleiSplit(lb)
         for j in valset(tmpMask):
             tmp[np.where(tmpMask==j)]=k
             k+=1
@@ -88,4 +104,4 @@ for ii in allMask:
     mmk+=np.asarray(plt.imread("../input/stage1_train/"+smpID+"/masks/"+ii),dtype=np.int32)
     pass
 rMsk = reLabel(mmk) # split nuclei
-plt.imshow(rMsk)
+plt.imshow(rMsk, cmap = "Vega20c")
