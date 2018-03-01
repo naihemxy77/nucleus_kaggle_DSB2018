@@ -149,19 +149,21 @@ def ExampleView(df,Index):
 #Some problematic image index to see: 535, 606
 
 ##Read in data
-train_df = pickle.load(open("train_df.p","rb"))
-centroids = pickle.load(open("centroids.p","rb"))
-test_df = pickle.load(open("test_df.p","rb"))
+#train_df = pickle.load(open("train_df.p","rb"))
+#centroids = pickle.load(open("centroids.p","rb"))
+#test_df = pickle.load(open("test_df.p","rb"))
+Eval_Res = pd.read_csv('SplitNucleiResults.csv')
 
 ##Randomly sample a few images to evaluate; each index is row index of dataframe
 #WholeIndex = np.arange(0,train_df.shape[0])
 #Index = random.sample(set(WholeIndex), 5)
 #Eval_Res = SplitNucleiEval(train_df,Index)
 
-#Read in whole dataset for a thorough evaluation (take hours)
-WholeIndex = np.arange(0,train_df.shape[0])
-Eval_Res = SplitNucleiEval(train_df,WholeIndex)
-pickle.dump(Eval_Res, open("Eval_Res.p","wb"))
+##Read in whole dataset for a thorough evaluation (take hours)
+#WholeIndex = np.arange(0,train_df.shape[0])
+#Eval_Res = SplitNucleiEval(train_df,WholeIndex)
+#pickle.dump(Eval_Res, open("Eval_Res.p","wb"))
 
 ##Show a particular example with one specified row index
-#ExampleView(train_df,601)
+index=train_df[train_df['ImageId']=='f4b7c24baf69b8752c49d0eb5db4b7b5e1524945d48e54925bff401d5658045d'].index[0]
+ExampleView(train_df,index)
