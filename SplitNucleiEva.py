@@ -1,10 +1,13 @@
 import numpy as np
+import pandas as pd
 import iou_loss
 import SplitNuclei as sn
 from skimage.morphology import label # label regions
 import skimage
 import matplotlib.pyplot as plt
 import data_process
+import random
+import pickle
 
 def SplitNucleiEval(df,Index):
     Index = np.array(Index)
@@ -18,11 +21,18 @@ def SplitNucleiEval(df,Index):
     res,p_list=iou_loss.IoU_Loss(masks_list,Index,df)
     res_splitted,p_list_splitted=iou_loss.IoU_Loss(masks_splitted_list,Index,df)
     
-    print('Overall IoU loss of original masks:{:1.3f}'.format(res))
-    print('Overall IoU loss of splitted masks:{:1.3f}'.format(res_splitted))
+    print('Overall IoU Score of original masks:{:1.3f}'.format(res))
+    print('Overall IoU Score of splitted masks:{:1.3f}'.format(res_splitted))
     
     match_ori = np.sum(p_list,axis=1)/10
     match_spl = np.sum(p_list_splitted,axis=1)/10
+    details = []
+    for i in range(len(Index)):
+        info = (Index[i],match_ori[i],match_spl[i],match_spl[i]-match_ori[i],df.loc[Index[i],'ImageId'])
+        details.append(info)
+    res_df = pd.DataFrame(details, columns=['Index','IoU_Score_before_split','IoU_Score_after_split','IoU_improvement_after_split','ImageId'])
+    res_df=res_df.sort_values(by=['IoU_improvement_after_split','IoU_Score_before_split'],ascending=False)
+    res_df.to_csv('SplitNucleiResults.csv', index = False)
     id_sim = np.where(np.abs(match_ori-match_spl)<=0.01)[0]
     id_bet = np.where(match_spl-match_ori>0.01)[0]
     id_wor = np.where(match_ori-match_spl>0.01)[0]
@@ -30,11 +40,7 @@ def SplitNucleiEval(df,Index):
     print('{:d} Images better in original case.'.format(len(id_wor)))
     print('{:d} Images better in splitted case.'.format(len(id_bet)))
     
-    print('Images similar in both cases: ',Index[id_sim])
-    print('Images better in original case: ',Index[id_wor])
-    print('Images better in splitted case: ',Index[id_bet])
-    
-    return Index[id_sim],Index[id_wor],Index[id_bet]
+    return res_df
 
 def ExampleView(df,Index):
     mask_pred = df.loc[Index,'ImageLabel']
@@ -49,6 +55,10 @@ def ExampleView(df,Index):
     y_true = np.zeros((num_masks, height, width), np.uint16)
     y_true[:,:,:] = masks[:,:,:] // 255  # Change ground truth mask to zeros and ones
     
+    true_split = np.zeros((height, width), np.uint16)
+    for i in range(num_masks):
+        true_split[y_true[i]==1] = i+1
+    
     lab_img = label(mask_pred>0)
     if lab_img.max()<1:
             lab_img[0,0] = 1 # ensure at least one prediction per image
@@ -61,13 +71,16 @@ def ExampleView(df,Index):
         y_pred_splitted[i] = mask_splitted==i+1
     
     # Show simulated predictions
-    fig,ax = plt.subplots(1,2,figsize=(15,30))
-    ax[0].imshow(lab_img)
-    ax[0].set_title("Original Label "+str(Index))
+    fig,ax = plt.subplots(1,3,figsize=(10,30))
+    ax[0].imshow(true_split)
+    ax[0].set_title("True Label "+str(Index))
     ax[0].axis('off')
-    ax[1].imshow(mask_splitted)
-    ax[1].set_title("Splitted Label "+str(Index))
+    ax[1].imshow(lab_img)
+    ax[1].set_title("Original Label "+str(Index))
     ax[1].axis('off')
+    ax[2].imshow(mask_splitted)
+    ax[2].set_title("Splitted Label "+str(Index))
+    ax[2].axis('off')
     plt.show()
     
     # Compute number of objects
@@ -104,7 +117,8 @@ def ExampleView(df,Index):
     # Loop over IoU thresholds
     p = 0
     p2 = 0
-    print("Thresh\tTP\tFP\tFN\tPrec.\tTP\tFP\tFN\tPrec_clean.")
+    print("Original\t\t\t\tSplitted")
+    print("Thresh\tTP\tFP\tFN\tPrec.\tTP\tFP\tFN\tPrec_splitted.")
     for t in np.arange(0.5, 1.0, 0.05):
         matches = iou > t
         matches2 = iou2 > t
@@ -135,21 +149,19 @@ def ExampleView(df,Index):
 #Some problematic image index to see: 535, 606
 
 ##Read in data
-df = data_process.data_process(datatype='train',label=True,cluster=False)
+train_df = pickle.load(open("train_df.p","rb"))
+centroids = pickle.load(open("centroids.p","rb"))
+test_df = pickle.load(open("test_df.p","rb"))
 
 ##Randomly sample a few images to evaluate; each index is row index of dataframe
-#WholeIndex = np.arange(0,df.shape[0])
+#WholeIndex = np.arange(0,train_df.shape[0])
 #Index = random.sample(set(WholeIndex), 5)
-#id_sim,id_wor,id_bet = SplitNucleiEval(df,Index)
+#Eval_Res = SplitNucleiEval(train_df,Index)
 
 #Read in whole dataset for a thorough evaluation (take hours)
-WholeIndex = np.arange(0,df.shape[0])
-id_sim,id_wor,id_bet = SplitNucleiEval(df,WholeIndex)
+WholeIndex = np.arange(0,train_df.shape[0])
+Eval_Res = SplitNucleiEval(train_df,WholeIndex)
+pickle.dump(Eval_Res, open("Eval_Res.p","wb"))
 
 ##Show a particular example with one specified row index
-##One example better in splitted case
-#ExampleView(df,id_bet[random.randint(0,len(id_bet)-1)])
-##One example worse in splitted case
-#ExampleView(df,id_wor[random.randint(0,len(id_wor)-1)])
-
-ExampleView(df,18)
+#ExampleView(train_df,601)
