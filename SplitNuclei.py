@@ -50,7 +50,8 @@ def getLabeled(lbimg,lbval): ### extract object with specified label value
 #    return labels
 
 def nucleiSplit(mask): ## a much better version, and it's able to split nuclei that have long attach edge
-    maskConv = convex_hull_image(mask)
+    mask00 = ndi.binary_fill_holes(mask)
+    maskConv = convex_hull_image(mask00)
     maskB = tinyDottsRemove(maskConv-mask)
     while(np.max(label(maskB))>1):
         maskB = binary_closing(binary_dilation(maskB,selem=disk(1)),selem=disk(2))
@@ -59,6 +60,7 @@ def nucleiSplit(mask): ## a much better version, and it's able to split nuclei t
     maskD = tinyDottsRemove(binary_erosion(imgToMask(binary_dilation(maskConv,selem=disk(1))+(-1)*maskC),selem=disk(1)))
     maskE = binary_opening(maskD,selem=disk(1))
     markers = ndi.label(maskE)[0]
+    markers[np.where(mask00==0)]=0
     labels = watershed(-mask, markers, mask=mask)
     return labels  
 
