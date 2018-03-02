@@ -5,9 +5,6 @@
 ##### at least contains the column of 'ImageId'; with index to be a 
 ##### a list of df indexes corresponding to predicted masks
 
-##Input masks can be either 0-1 indicator, or sequentially integer-labeled,
-##or a list with each element just contains one nuclei with 0-1 indicator.
-
 import skimage
 from skimage.morphology import label # label regions
 import numpy as np
@@ -32,9 +29,11 @@ def IoU_Loss(input_mask_list,index,df):
                 if lab_img.max()<1:
                     lab_img[0,0] = 1 # ensure at least one prediction per image
             else: lab_img = input_mask
-            y_pred = np.zeros((lab_img.max(), height, width), np.uint16)
-            for i in range(lab_img.max()):
-                y_pred[i] = lab_img==i+1
+            label_set = np.unique(lab_img)
+            label_set = np.delete(label_set,0)
+            y_pred = np.zeros((len(label_set), height, width), np.uint16)
+            for i in range(len(label_set)):
+                y_pred[i] = lab_img==label_set[i]
         else: y_pred = input_mask
         # Compute number of objects
         num_true = len(y_true)
