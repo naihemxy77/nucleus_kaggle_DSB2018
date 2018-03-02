@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import iou_loss
-import SplitNuclei as sn
+import AggressiveSplit as sn
 from skimage.morphology import label # label regions
 import skimage
 import matplotlib.pyplot as plt
@@ -15,7 +15,7 @@ def SplitNucleiEval(df,Index):
     masks_splitted_list = []
     for i in range(len(Index)):
         mask = df.loc[Index[i],'ImageLabel']
-        mask_splitted = sn.reLabel(mask)
+        mask_splitted = sn.aggressiveLabel(mask)
         masks_list.append(mask)
         masks_splitted_list.append(mask_splitted)
     res,p_list=iou_loss.IoU_Loss(masks_list,Index,df)
@@ -44,7 +44,7 @@ def SplitNucleiEval(df,Index):
 
 def ExampleView(df,Index):
     mask_pred = df.loc[Index,'ImageLabel']
-    mask_splitted = sn.reLabel(mask_pred)
+    mask_splitted = sn.aggressiveLabel(mask_pred)
     
     mfile = "../input/stage1_train/{}/masks/*.png".format(df.loc[Index,'ImageId'])
     masks = skimage.io.imread_collection(mfile).concatenate()
@@ -66,9 +66,11 @@ def ExampleView(df,Index):
     for i in range(lab_img.max()):
         y_pred[i] = lab_img==i+1
     
-    y_pred_splitted = np.zeros((mask_splitted.max(), height, width), np.uint16)
-    for i in range(mask_splitted.max()):
-        y_pred_splitted[i] = mask_splitted==i+1
+    label_set = np.unique(mask_splitted)
+    label_set = np.delete(label_set,0)
+    y_pred_splitted = np.zeros((len(label_set), height, width), np.uint16)
+    for i in range(len(label_set)):
+        y_pred_splitted[i] = mask_splitted==label_set[i]
     
     # Show simulated predictions
     fig,ax = plt.subplots(1,3,figsize=(10,30))
@@ -133,30 +135,18 @@ def ExampleView(df,Index):
         print("{:1.3f}\t{}\t{}\t{}\t{:1.3f}\t{}\t{}\t{}\t{:1.3f}".format(t, tp, fp, fn, tp / (tp + fp + fn),tp2, fp2, fn2, tp2 / (tp2 + fp2 + fn2)))
     
     print("AP\t-\t-\t-\t{:1.3f}\t-\t-\t-\t{:1.3f}".format(p / 10, p2/10))
-    print('One worst matched nuclei in orignal mask file ...')
-    # Show one example
-    I = np.argmin(iou)
-    fig,ax = plt.subplots(1,2)
-    ax[0].imshow(y_pred[I])
-    ax[0].set_title("Original Label "+str(I))
-    ax[0].axis('off')
-    ax[1].imshow(y_pred_splitted[I])
-    ax[1].set_title("Splitted Label "+str(I))
-    ax[1].axis('off')
 
 ###################MAIN#######################################################
-
-#Some problematic image index to see: 535, 606
 
 ##Read in data
 #train_df = pickle.load(open("train_df.p","rb"))
 #centroids = pickle.load(open("centroids.p","rb"))
 #test_df = pickle.load(open("test_df.p","rb"))
-Eval_Res = pd.read_csv('SplitNucleiResults.csv')
+#Eval_Res = pd.read_csv('SplitNucleiResults.csv')
 
-##Randomly sample a few images to evaluate; each index is row index of dataframe
+###Randomly sample a few images to evaluate; each index is row index of dataframe
 #WholeIndex = np.arange(0,train_df.shape[0])
-#Index = random.sample(set(WholeIndex), 5)
+#Index = random.sample(set(WholeIndex), 10)
 #Eval_Res = SplitNucleiEval(train_df,Index)
 
 ##Read in whole dataset for a thorough evaluation (take hours)
@@ -164,6 +154,6 @@ Eval_Res = pd.read_csv('SplitNucleiResults.csv')
 #Eval_Res = SplitNucleiEval(train_df,WholeIndex)
 #pickle.dump(Eval_Res, open("Eval_Res.p","wb"))
 
-##Show a particular example with one specified row index
-index=train_df[train_df['ImageId']=='f4b7c24baf69b8752c49d0eb5db4b7b5e1524945d48e54925bff401d5658045d'].index[0]
+###Show a particular example with one specified row index
+index=train_df[train_df['ImageId']=='bb61fc17daf8bdd4e16fdcf50137a8d7762bec486ede9249d92e511fcb693676'].index[0]
 ExampleView(train_df,index)
