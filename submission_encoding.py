@@ -3,7 +3,6 @@
 
 ##### Call submission_gen(df, filename, cut_off = 0.5) to generate submission
 ##### file from a dataframe with ImageId and ImageLabel columns
-##### ImageLabel can be either 0-1 indicator or sequentially integer-labeled
 
 from skimage.morphology import label # label regions
 import numpy as np
@@ -45,8 +44,10 @@ def submission_gen(df, filename, cut_off = 0.5):
             pred_encode = list(prob_to_rles(row['ImageLabel'], cut_off))
         else:
             pred_encode = []
-            for i in range(row['ImageLabel'].max()):
-                pred_encode.append(rle_encoding(row['ImageLabel']==i+1))
+            label_set = np.unique(row['ImageLabel'])
+            label_set = np.delete(label_set,0)
+            for i in range(len(label_set)):
+                pred_encode.append(rle_encoding(row['ImageLabel']==label_set[i]))
         for nuclei_code in pred_encode:
             out_pred_list+=[dict(ImageId=row['ImageId'], 
                              EncodedPixels = ' '.join(np.array(nuclei_code).astype(str)))]
