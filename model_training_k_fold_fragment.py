@@ -9,7 +9,7 @@ from sklearn.model_selection import KFold
 
 #Train Test Split parameters
 id_num = 'Guo_0307_shallow_3fold'
-n = 2
+n = 5
 SEED = 932894
 #Confidence threshold for nuclei identification
 cutoff = 0.5
@@ -36,9 +36,9 @@ def model_fitting(ids,I):
     val_y = np.concatenate(Train_data.loc[ids[1],'y'].values,axis=0)
     #model fitting
     model = nn_model.model_gen(InputDim)
-    epochs_number = 2
-    earlyStopping = EarlyStopping(monitor='val_loss', patience=1, verbose=0, mode='min')
-    mcp_save = ModelCheckpoint('.mdl_'+str(id_num)+'_'+str(I)+'.hdf5', save_best_only=True, monitor='val_loss', mode='min')
+    epochs_number = 20
+    earlyStopping = EarlyStopping(monitor='val_loss', patience=5, verbose=0, mode='min')
+    mcp_save = ModelCheckpoint('model_'+str(id_num)+'_'+str(I)+'.hdf5', save_best_only=True, monitor='val_loss', mode='min')
     history = History()
     model.fit(train_X,train_y, batch_size=32, epochs=epochs_number, verbose=1, validation_data=(val_X,val_y), shuffle=True, class_weight=None, initial_epoch=0, callbacks=[earlyStopping,mcp_save,history])
     df = pd.DataFrame.from_dict(history.history)
