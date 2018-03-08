@@ -44,7 +44,7 @@ def model_fitting(ids,I):
     df = pd.DataFrame.from_dict(history.history)
     df.to_csv('history_'+str(id_num)+'_'+str(I)+'.csv', sep='\t', index=True, float_format='%.4f')
     #test data prediction
-    model.load_weights(filepath = '.mdl_'+str(id_num)+'_'+str(I)+'.hdf5')
+    model.load_weights(filepath = 'model_'+str(id_num)+'_'+str(I)+'.hdf5')
     Test_Label_I = []
     for t in range(Test_data.shape[0]):
         test_x = Test_data.loc[t,'X']
