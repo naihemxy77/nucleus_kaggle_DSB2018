@@ -8,7 +8,7 @@ import pickle
 from sklearn.model_selection import KFold
 
 #Train Test Split parameters
-id_num = 'Guo_0307_shallow_3fold'
+id_num = 'Guo_0307_shallow_5fold'
 n = 5
 SEED = 932894
 #Confidence threshold for nuclei identification
