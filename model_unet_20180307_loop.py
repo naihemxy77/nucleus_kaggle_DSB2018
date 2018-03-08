@@ -95,9 +95,9 @@ kf = KFold(n_splits=CV,random_state=100)
 epochs_number=5
 batch_size=50
 def cross_validation_keras(CV,epochs_number,train_X, train_Y,dropout,activate,batch_size,learning_rate):
-    record_loss=np.zeros((CV,epochs_number))
-    record_val_loss=np.zeros((CV,epochs_number))
     i=-1
+    loss=[]
+    val_loss=[]
     for train_index, test_index in kf.split(train_X):
         i=i+1
         model=get_unet(IMG_WIDTH=train_X.shape[1],IMG_HEIGHT=train_X.shape[2],IMG_CHANNELS=3,dropout=dropout,activate=activate,learning_rate=learning_rate)
@@ -106,12 +106,13 @@ def cross_validation_keras(CV,epochs_number,train_X, train_Y,dropout,activate,ba
         history = History()
         earlyStopping = EarlyStopping(patience=5, verbose=1)
         history=model.fit(x_train,y_train, batch_size=batch_size,epochs=epochs_number, validation_data=(x_val,y_val), shuffle=True, initial_epoch=0,callbacks=[earlyStopping])
-        record_loss[i,0:epochs_number]=history.history['loss']
-        record_val_loss[i,0:epochs_number]=history.history['val_loss']
-    final_loss=np.mean(record_loss,axis=0)
-    final_val_loss=np.mean(record_val_loss,axis=0)
-    print(final_loss)
-    print(final_val_loss)
+        loss.append(np.mean(np.array(history.history['loss'])))
+        val_loss.append(np.mean(np.array(history.history['val_loss'])))
+    average_loss=np.mean(np.array(loss))
+    average_val_loss=np.mean(np.array(val_loss))
+    print(average_loss)
+    print(average_val_loss)
+    return average_loss,average_val_loss
 #loop needed for testing the parameters
 #drop_out_pool=[0.1,0.15,0.2]
 #activate=['relu','elu']
@@ -125,7 +126,9 @@ for dropout in drop_out_pool:
             print("drop_out: ",dropout)
             print("learning_rate: ",learning_rate)
             print("activate_function: ",activate)
-            cross_validation_keras(CV,epochs_number,train_X, train_Y,dropout,activate,batch_size,learning_rate)
+            average_loss,average_val_loss=cross_validation_keras(CV,epochs_number,train_X, train_Y,dropout,activate,batch_size,learning_rate)
+            final_loss.append(average_loss)
+            final_loss.append(average_val_loss)
 
 pickle.dump(final_loss,open('final_loss.p','wb'))
 pickle.dump(final_val_loss,open('final_val_loss.p','wb'))
