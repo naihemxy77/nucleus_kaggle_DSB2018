@@ -57,6 +57,7 @@ Test_data = ionn.sub_fragments_extract(InputDim=InputDim,OutputDim=OutputDim,Str
 
 pred_outputs_kfold = []
 for i in range(n):
+    print('{:d}th cv is starting...'.format(i))
     pred_outputs_kfold.append(model_fitting(ids[i],i))
 pred_outputs_kfold = np.sum(pred_outputs_kfold,axis=0)/n
 
