@@ -177,7 +177,7 @@ def tinyLabelRemove(lb,minimum=5):
 
 # In[12]:
 
-def idToResult(idstr,pth,remove_size=12):
+def idToResult(idstr,pth,remove_size=12): # main function. The best remove_size is somewhere between 10 and 35, I'm not sure.
     tmpIm = idToImg(idstr=smpID,pth=trainPth)
     tmp = StackFilter(smpID,trainPth)
     tmpLB = tinyLabelRemove(tmp,remove_size)
