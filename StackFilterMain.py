@@ -85,11 +85,11 @@ def trial(lastLB,currLB,tmpMask):
     lastPoints = list(lastDict.keys())
     currDict = {}
     for p in lastPoints:
-        currDict[p]=currLB[p]
+        currDict[p[0],p[1]]=currLB[p[0],p[1]]
         pass
     readyPoints = mergeDetection(dict1=currDict)
     for pp in readyPoints:
-        if((lastLB[pp]!=0)and(currLB[pp]!=0)and(currDict[pp]!=0)):
+        if((lastLB[pp[0],pp[1]]!=0)and(currLB[pp[0],pp[1]]!=0)and(currDict[pp[0],pp[1]]!=0)):
             addToFinal(binary_closing(getLabeled(lastLB,lastLB[pp]),selem=disk(1)),res=tmpMask)
             pass
         pass
