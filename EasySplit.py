@@ -3,12 +3,13 @@
 
 # In[24]:
 
-get_ipython().magic('matplotlib inline')
+#get_ipython().magic('matplotlib inline')
 import numpy as np
 import pandas as pd
 import os
 import matplotlib.pyplot as plt
-from skimage.segmentation import morphological_chan_vese
+#from skimage.segmentation import morphological_chan_vese
+from ShanZhai import morphological_chan_vese
 from skimage.restoration import denoise_nl_means, estimate_sigma
 from math import sqrt,pi
 
