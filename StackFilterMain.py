@@ -85,11 +85,13 @@ def trial(lastLB,currLB,tmpMask):
     lastPoints = list(lastDict.keys())
     currDict = {}
     for p in lastPoints:
-        currDict[p[0],p[1]]=currLB[p[0],p[1]]
+        p_new = (int(p[0]),int(p[1]))
+        #print(p_new)
+        currDict[p_new]=currLB[p_new]
         pass
     readyPoints = mergeDetection(dict1=currDict)
     for pp in readyPoints:
-        if((lastLB[pp[0],pp[1]]!=0)and(currLB[pp[0],pp[1]]!=0)and(currDict[pp[0],pp[1]]!=0)):
+        if((lastLB[pp]!=0)and(currLB[pp]!=0)and(currDict[pp]!=0)):
             addToFinal(binary_closing(getLabeled(lastLB,lastLB[pp]),selem=disk(1)),res=tmpMask)
             pass
         pass
@@ -191,8 +193,8 @@ def idToResult(idstr,pth,remove_size=12): # main function. The best remove_size 
 
 trainPth = "../input/stage1_train/"
 testPth = "../input/stage1_test/"
-smpID = '00071198d059ba7f5914a526d124d28e6d010c92466da21d4a04cd5413362552'
-#smpID = 'c96109cbebcf206f20035cbde414e43872074eee8d839ba214feed9cd36277a1' #535
+#smpID = '00071198d059ba7f5914a526d124d28e6d010c92466da21d4a04cd5413362552'
+smpID = 'c96109cbebcf206f20035cbde414e43872074eee8d839ba214feed9cd36277a1' #535
 #smpID = 'e7a3a7c99483c243742b6cfa74e81cd48f126dcef004016ad0151df6c16a6243' #606
 #smpID = '00ae65c1c6631ae6f2be1a449902976e6eb8483bf6b0740d00530220832c6d3e' #hist
 #smpID = 'c322c72b9d411e631580fee9312885088b4bb14ed297aa4b246ec943533b3ffb' #bright
