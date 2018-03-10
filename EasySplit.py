@@ -111,6 +111,9 @@ def easyBinarySplit(img,mask):
 
 def easyLabel(img,labelAll,minimum=5):
     tmpMask = np.zeros_like(labelAll)
+    testImg = np.atleast_3d(np.copy(img))
+    if testImg.shape[2]==3:
+        img = immaturalProcess(img)
     #lbs = label(maskAll)
     for ii in valset(labelAll):
         recursiveLabel(img=img,mask=getLabeled(labelAll,ii),tmpMask=tmpMask,minimum = minimum)
