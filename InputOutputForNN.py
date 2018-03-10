@@ -105,7 +105,7 @@ def sub_fragments_extract(InputDim=(128,128),OutputDim=(100,100),Stride=(50,50),
     elif image_type == 'histo':
         df = df_all[df_all['hsv_cluster']==1]
     elif image_type == 'bright':
-        df = df_all[df_all['hsv_cluster']==1]
+        df = df_all[df_all['hsv_cluster']==2]
     else:
         raise ValueError('image_type has to be all, fluo, histo or bright ...')
     inputX,inputY = InputDim
