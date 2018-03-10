@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 import os
 import matplotlib.pyplot as plt
+import stat_models2 as sm
 from skimage import img_as_float
 from skimage.segmentation import morphological_chan_vese
 from scipy.ndimage.measurements import center_of_mass
@@ -146,10 +147,11 @@ def StackFilter(imgID,pth):
         modifyLabel(tmpMask)
         pass
     else:
-        thr = threshold_otsu(ch0.ravel())
-        tmpMask[np.where(ch0>=thr)]=1
-        tmpMask = ndi.binary_fill_holes(tmpMask)
-        tmpMask = label(tmpMask)
+        #thr = threshold_otsu(ch0.ravel())
+        #tmpMask[np.where(ch0>=thr)]=1
+        tmpMask = sm.Thr_combined_model2(img,[0.504,0.496,0.454])
+        #tmpMask = ndi.binary_fill_holes(tmpMask)
+        #tmpMask = label(tmpMask)
     #alb = aggressiveLabel(tmpMask)
     elb = easyLabel(ch0,tmpMask)
     return elb
