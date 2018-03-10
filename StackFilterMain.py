@@ -10,7 +10,8 @@ import os
 import matplotlib.pyplot as plt
 import stat_models2 as sm
 from skimage import img_as_float
-from skimage.segmentation import morphological_chan_vese
+#from skimage.segmentation import morphological_chan_vese
+from ShanZhai import morphological_chan_vese
 from scipy.ndimage.measurements import center_of_mass
 from skimage.filters import threshold_otsu
 
