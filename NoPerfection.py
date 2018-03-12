@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 from skimage import img_as_float,restoration
 from skimage.segmentation import morphological_chan_vese
 from skimage.restoration import denoise_nl_means, estimate_sigma
-from skimage.segmentation import morphological_chan_vese
+from ShanZhai import morphological_chan_vese
 from scipy.ndimage.measurements import center_of_mass
 from skimage.filters import threshold_otsu
 from skimage.filters import threshold_yen
