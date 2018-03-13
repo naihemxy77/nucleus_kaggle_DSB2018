@@ -95,9 +95,9 @@ def OutputStitch(img_shape,output,strideX,strideY):
 def sub_fragments_extract(InputDim=(128,128),OutputDim=(100,100),Stride=(50,50),image_type='all',train=True,reflection=False):
     print('Loading pickle file ...')
     if train:
-        df_all = pickle.load(open("../input/train_df.p","rb"))
+        df_all = pickle.load(open("../inputs/train_df.p","rb"))
     else:
-        df_all = pickle.load(open("../input/test_df.p","rb"))
+        df_all = pickle.load(open("../inputs/test_df.p","rb"))
     if image_type == 'all':
         df = df_all
     elif image_type == 'fluo':
