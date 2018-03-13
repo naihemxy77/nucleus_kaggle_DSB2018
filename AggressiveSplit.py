@@ -7,7 +7,7 @@
 # One more parameter is used, thr. It seems the threshold should be between 0.036 and 0.088
 # larger thr means more nuclei merged, namely less split
 
-get_ipython().magic('matplotlib inline')
+#get_ipython().magic('matplotlib inline')
 import numpy as np 
 import pandas as pd 
 import os
@@ -115,17 +115,17 @@ def nucleiBinarySplit(mask,thr):
 
 #smpID = '00071198d059ba7f5914a526d124d28e6d010c92466da21d4a04cd5413362552' #original
 #smpID = 'c96109cbebcf206f20035cbde414e43872074eee8d839ba214feed9cd36277a1' #535
-smpID = 'e7a3a7c99483c243742b6cfa74e81cd48f126dcef004016ad0151df6c16a6243' #606
-allMask = os.listdir("../input/stage1_train/"+smpID+'/masks')
+#smpID = 'e7a3a7c99483c243742b6cfa74e81cd48f126dcef004016ad0151df6c16a6243' #606
+#allMask = os.listdir("../input/stage1_train/"+smpID+'/masks')
 #mmk = np.zeros((256,256)) 
 #mmk = np.zeros((360,360)) 
-mmk = np.zeros((520,696))
-for ii in allMask:
-    mmk+=np.asarray(plt.imread("../input/stage1_train/"+smpID+"/masks/"+ii),dtype=np.int32)
-    pass
-rMsk = aggressiveLabel(mmk,minimum=5,thr=0.05) # split nuclei. It seems the threshold should be between 0.036 and 0.088
+#mmk = np.zeros((520,696))
+#for ii in allMask:
+#    mmk+=np.asarray(plt.imread("../input/stage1_train/"+smpID+"/masks/"+ii),dtype=np.int32)
+#    pass
+#rMsk = aggressiveLabel(mmk,minimum=5,thr=0.05) # split nuclei. It seems the threshold should be between 0.036 and 0.088
 # larger thr means more nuclei merged, namely less split
-plt.imshow(rMsk, cmap = "Vega20c")
+#plt.imshow(rMsk, cmap = "Vega20c")
 #vst = valset(rMsk)
 #print(len(vst))
 
