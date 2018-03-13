@@ -16,7 +16,7 @@ SEED = 932894
 #Confidence threshold for nuclei identification
 cutoff = 0.5
 
-train_df = pickle.load(open("../inputs/train_df.p","rb"))
+train_df = pickle.load(open("./inputs/train_df.p","rb"))
 random.seed(124335)
 #Fragment parameters
 InputDim = [128,128]
