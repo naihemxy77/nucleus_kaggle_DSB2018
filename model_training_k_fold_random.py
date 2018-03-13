@@ -2,7 +2,7 @@ from RandomGenClass import DataGenerator
 import InputOutputForNN as ionn
 import pandas as pd
 import numpy as np
-import cnn_shallow_0307 as nn_model
+import cnn_deep_0313 as nn_model
 from keras.callbacks import EarlyStopping, ModelCheckpoint, History
 import h5py
 import pickle
@@ -41,9 +41,9 @@ def model_fitting(ids,I,train_df):
     val_ids = [total_ids[i] for i in ids[1]]
     #model fitting
     model = nn_model.model_gen(InputDim)
-    epochs_number = 10
+    epochs_number = 30
     batch_size = 32
-    earlyStopping = EarlyStopping(monitor='val_loss', patience=3, verbose=0, mode='min')
+    earlyStopping = EarlyStopping(monitor='val_loss', patience=5, verbose=0, mode='min')
     mcp_save = ModelCheckpoint('model_'+str(id_num)+'_'+str(I)+'.hdf5', save_best_only=True, monitor='val_loss', mode='min')
     history = History()
     params ={'dim_x': InputDim[0],
