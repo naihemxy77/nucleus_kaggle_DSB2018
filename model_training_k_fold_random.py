@@ -10,8 +10,8 @@ from sklearn.model_selection import KFold
 import random
 
 #Train Test Split parameters
-n = 5
-id_num = 'Guo_0312_shallow_'+str(n)+'fold'
+n = 3
+id_num = 'Guo_0315_deep_'+str(n)+'fold'
 SEED = 932894
 #Confidence threshold for nuclei identification
 cutoff = 0.5
@@ -70,14 +70,17 @@ Test_data = ionn.sub_fragments_extract(InputDim=InputDim,OutputDim=OutputDim,Str
 
 pred_outputs_kfold = []
 for i in range(n):
+    print(str(i)+'th run is starting...')
     pred_outputs_kfold.append(model_fitting(ids[i],i,train_df))
 pred_outputs_kfold = np.sum(pred_outputs_kfold,axis=0)/n
-
+print('Preparing test labels...')
 Test_Label = []
 for i in range(Test_data.shape[0]):
+    print(str(i)+'th model is processing...')
     pred_test = pred_outputs_kfold[i]
     pred_label = ionn.MidExtractProcess(pred_test,InputDim[0],InputDim[1],OutputDim[0],OutputDim[1])
     OutputImage = ionn.OutputStitch(img_shape=Test_data.loc[i,'ImageShape'],output=pred_label,strideX=Stride[0],strideY=Stride[1])
     OutputImage = np.where(OutputImage>cutoff,1,0)
     Test_Label.append((Test_data.loc[i,'ImageId'],OutputImage))
+print('Saving results...')
 pickle.dump(Test_Label,open( "Test_Label.p","wb" ))
