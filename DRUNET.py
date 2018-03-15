@@ -107,7 +107,7 @@ def residual_block(X, f, d, stage, block):
 
 
 
-def DRUNET_gen(input_shape, init_lr = 0.1):
+def DRUNET_gen(input_shape, init_lr = 0.1, numClass = 1):
     X_input = Input(input_shape)
     X = ZeroPadding2D((0, 0))(X_input)
     
@@ -131,7 +131,7 @@ def DRUNET_gen(input_shape, init_lr = 0.1):
     X_res5_upSampled = UpSampling2D((2,2))(X_res5)
     X_std2 = standard_block(X=Add()([X_res5_upSampled,X_std1]),f=16,d=1,stage=2,block='g')
     
-    X_output = Conv2D(1, (1, 1), activation='sigmoid')(X_std2)
+    X_output = Conv2D(numClass, (1, 1), activation='sigmoid')(X_std2)
     
     model = Model(inputs=[X_input], outputs=[X_output])
     #adam = Adam(lr = learning_rate)
