@@ -54,12 +54,15 @@ def model_fitting(ids,I,train_df):
     training_generator = DataGenerator(**params).generate(train_ids,train_df)
     validation_generator = DataGenerator(**params).generate(val_ids,train_df)
     model.fit_generator(generator=training_generator, steps_per_epoch=len(train_ids)//batch_size, epochs=epochs_number, validation_data=validation_generator,validation_steps=len(val_ids)//batch_size, callbacks=[earlyStopping,mcp_save,history])
+    print('done.')
     df = pd.DataFrame.from_dict(history.history)
     df.to_csv('history_'+str(id_num)+'_'+str(I)+'.csv', sep='\t', index=True, float_format='%.4f')
     #test data prediction
+    print('Start to predict...')
     model.load_weights(filepath = 'model_'+str(id_num)+'_'+str(I)+'.hdf5')
     Test_Label_I = []
     for t in range(Test_data.shape[0]):
+        print(str(t)+'th image is being predicted...')
         test_x = Test_data.loc[t,'X']
         pred_test = model.predict(test_x)
         Test_Label_I.append(pred_test)
