@@ -82,10 +82,14 @@ for i in range(n):
 #Import test data pieces given image type: 'all','fluo','histo' or 'bright'
 Test_data = ionn.sub_fragments_extract(InputDim=InputDim,OutputDim=OutputDim,Stride=Stride,image_type='all',train=False,reflection=False)
 print('Start to predict...')
-pred_outputs_kfold = []
+#pred_outputs_kfold = []
 for i in range(n):
-    pred_outputs_kfold.append(model_predict(i,Test_data))
-pred_outputs_kfold = np.sum(pred_outputs_kfold,axis=0)/n
+    if i == 0:
+        pred_outputs_kfold=np.array(model_predict(i,Test_data))
+    else:
+        pred_outputs_kfold=pred_outputs_kfold+np.array(model_predict(i,Test_data))
+print(pred_outputs_kfold.shape)
+pred_outputs_kfold = pred_outputs_kfold/n
 print('Preparing test labels...')
 Test_Label = []
 for i in range(Test_data.shape[0]):
