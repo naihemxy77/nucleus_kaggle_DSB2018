@@ -35,7 +35,6 @@ ids=list(kf.split(total_ids))
 loc_i = np.arange(n)
 
 def model_fitting(ids,I,train_df):
-    global Test_data
     #concatenate all pieces into one dataset
     train_ids = [total_ids[i] for i in ids[0]]
     val_ids = [total_ids[i] for i in ids[1]]
@@ -57,8 +56,14 @@ def model_fitting(ids,I,train_df):
     print('done.')
     df = pd.DataFrame.from_dict(history.history)
     df.to_csv('history_'+str(id_num)+'_'+str(I)+'.csv', sep='\t', index=True, float_format='%.4f')
+    ##To release GPU memory by deleting model
+    del output_history
+    del model
+
+def model_predict(I,Test_data):
+    model = nn_model.model_gen(InputDim)
     #test data prediction
-    print('Start to predict...')
+    print(str(I)+'th cv model to predict...')
     model.load_weights(filepath = 'model_'+str(id_num)+'_'+str(I)+'.hdf5')
     Test_Label_I = []
     for t in range(Test_data.shape[0]):
@@ -66,18 +71,20 @@ def model_fitting(ids,I,train_df):
         test_x = Test_data.loc[t,'X']
         pred_test = model.predict(test_x)
         Test_Label_I.append(pred_test)
-    del output_history
+    ##To release GPU memory by deleting model
     del model
-    gc.collect()
     return Test_Label_I
+
+for i in range(n):
+    print(str(i)+'th run is starting...')
+    model_fitting(ids[i],i,train_df)
 
 #Import test data pieces given image type: 'all','fluo','histo' or 'bright'
 Test_data = ionn.sub_fragments_extract(InputDim=InputDim,OutputDim=OutputDim,Stride=Stride,image_type='all',train=False,reflection=False)
-
+print('Start to predict...')
 pred_outputs_kfold = []
 for i in range(n):
-    print(str(i)+'th run is starting...')
-    pred_outputs_kfold.append(model_fitting(ids[i],i,train_df))
+    pred_outputs_kfold.append(model_predict(i,Test_data))
 pred_outputs_kfold = np.sum(pred_outputs_kfold,axis=0)/n
 print('Preparing test labels...')
 Test_Label = []
