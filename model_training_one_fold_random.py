@@ -2,7 +2,7 @@ from RandomGenClass import DataGenerator
 import InputOutputForNN as ionn
 import pandas as pd
 import numpy as np
-import cnn_shallow_0307 as nn_model
+import cnn_deep_0313 as nn_model
 import random
 from keras.callbacks import EarlyStopping, ModelCheckpoint, History
 import h5py
@@ -10,8 +10,8 @@ import pickle
 from keras.callbacks import TensorBoard
 
 #Train Test Split parameters
-id_num = 'Guo_0312_shallow_rd'
-r = 0.2
+id_num = 'Guo_0315_deep_rd'
+r = 0.1
 SEED = 932894
 #Confidence threshold for nuclei identification
 cutoff = 0.5
@@ -23,11 +23,11 @@ InputDim = [128,128]
 OutputDim = [100,100]
 Stride = [50,50]
 #Extract train data imageids
-train_df = train_df
-total_ids = list(train_df['ImageId'].values)
+#train_df = train_df
+#total_ids = list(train_df['ImageId'].values)
 #If just want to train fluorescent data (similarly, 1 for histo and 2 for bright)
-#train_df = train_df[train_df['hsv_cluster']==0]
-#total_ids = list(train_df.loc[train_df['hsv_cluster']==0,'ImageId'].values)
+train_df = train_df[train_df['hsv_cluster']==1]
+total_ids = list(train_df.loc[train_df['hsv_cluster']==1,'ImageId'].values)
 
 #Split images into train val sets
 train_ids = random.sample(total_ids,int(len(total_ids)*(1-r)))
@@ -55,7 +55,7 @@ df = pd.DataFrame.from_dict(history.history)
 df.to_csv('history_'+str(id_num)+'.csv', sep='\t', index=True, float_format='%.4f')
 
 #Import test data pieces given image type: 'all','fluo','histo' or 'bright'
-Test_data = ionn.sub_fragments_extract(InputDim=InputDim,OutputDim=OutputDim,Stride=Stride,image_type='all',train=False,reflection=False)
+Test_data = ionn.sub_fragments_extract(InputDim=InputDim,OutputDim=OutputDim,Stride=Stride,image_type='histo',train=False,reflection=False)
 #test data prediction
 model.load_weights(filepath = 'model_'+str(id_num)+'.hdf5')
 Test_Label = []
