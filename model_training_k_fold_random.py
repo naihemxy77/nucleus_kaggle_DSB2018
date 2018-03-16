@@ -10,7 +10,7 @@ from sklearn.model_selection import KFold
 import random
 
 #Train Test Split parameters
-n = 3
+n = 5
 id_num = 'Guo_0315_deep_'+str(n)+'fold'
 SEED = 932894
 #Confidence threshold for nuclei identification
