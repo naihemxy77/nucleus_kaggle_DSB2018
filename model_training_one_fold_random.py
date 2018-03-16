@@ -7,6 +7,7 @@ import random
 from keras.callbacks import EarlyStopping, ModelCheckpoint, History
 import h5py
 import pickle
+from keras.callbacks import TensorBoard
 
 #Train Test Split parameters
 id_num = 'Guo_0312_shallow_rd'
@@ -39,6 +40,7 @@ batch_size = 32
 earlyStopping = EarlyStopping(monitor='val_loss', patience=3, verbose=0, mode='min')
 mcp_save = ModelCheckpoint('model_'+str(id_num)+'.hdf5', save_best_only=True, monitor='val_loss', mode='min')
 history = History()
+tensorboard = TensorBoard(log_dir='./logs', histogram_freq=0, write_graph=True, write_images=False)
 params ={'dim_x': InputDim[0],
          'dim_y': InputDim[1],
          'dim_z': 3,
@@ -46,7 +48,9 @@ params ={'dim_x': InputDim[0],
          'shuffle': True}
 training_generator = DataGenerator(**params).generate(train_ids,train_df)
 validation_generator = DataGenerator(**params).generate(val_ids,train_df)
-model.fit_generator(generator=training_generator, steps_per_epoch=len(train_ids)//batch_size, epochs=epochs_number, validation_data=validation_generator,validation_steps=len(val_ids)//batch_size, callbacks=[earlyStopping,mcp_save,history])
+model.fit_generator(generator=training_generator, steps_per_epoch=len(train_ids)//batch_size, epochs=epochs_number, 
+                    validation_data=validation_generator,validation_steps=len(val_ids)//batch_size, 
+                    callbacks=[earlyStopping,mcp_save,history,tensorboard])
 df = pd.DataFrame.from_dict(history.history)
 df.to_csv('history_'+str(id_num)+'.csv', sep='\t', index=True, float_format='%.4f')
 
