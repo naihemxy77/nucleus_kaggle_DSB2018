@@ -35,12 +35,12 @@ val_ids = list(set(total_ids).difference(train_ids))
 
 #model fitting
 model = nn_model.model_gen(InputDim)
-epochs_number = 10
-batch_size = 32
+epochs_number = 20
+batch_size = 10
 earlyStopping = EarlyStopping(monitor='val_loss', patience=3, verbose=0, mode='min')
 mcp_save = ModelCheckpoint('model_'+str(id_num)+'.hdf5', save_best_only=True, monitor='val_loss', mode='min')
 history = History()
-tensorboard = TensorBoard(log_dir='./logs', histogram_freq=0, write_graph=True, write_images=False)
+tensorboard = TensorBoard(log_dir='./logs', batch_size=batch_size, histogram_freq=0, write_graph=True, write_images=False)
 params ={'dim_x': InputDim[0],
          'dim_y': InputDim[1],
          'dim_z': 3,
