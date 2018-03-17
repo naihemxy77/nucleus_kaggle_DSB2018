@@ -1,3 +1,6 @@
+import matplotlib
+matplotlib.use('Agg')
+
 import numpy as np
 import pandas as pd
 import submission_encoding
@@ -5,7 +8,7 @@ import matplotlib.pyplot as plt
 import pickle
 from matplotlib.backends.backend_pdf import PdfPages
 import AggressiveSplit as sn
-matplotlib.use('Agg')
+
 ##Generate Test Masks and Submission files given pickle outputs from models
 ##In current file, if image type is not histological, then test masks will be
 ##predicted by the linear combination of otsu,iso and li.
