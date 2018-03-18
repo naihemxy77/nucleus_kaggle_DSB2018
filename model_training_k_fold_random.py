@@ -39,7 +39,7 @@ def model_fitting(ids,I,train_df):
     train_ids = [total_ids[i] for i in ids[0]]
     val_ids = [total_ids[i] for i in ids[1]]
     #model fitting
-    model = nn_model.model_gen(InputDim)
+    model = nn_model.get_unet(InputDim)
     epochs_number = 50
     batch_size = 10
     earlyStopping = EarlyStopping(monitor='val_loss', patience=5, verbose=0, mode='min')
@@ -61,7 +61,7 @@ def model_fitting(ids,I,train_df):
     del model
 
 def model_predict(I,Test_data):
-    model = nn_model.model_gen(InputDim)
+    model = nn_model.get_unet(InputDim)
     #test data prediction
     print(str(I)+'th cv model to predict...')
     model.load_weights(filepath = 'model_'+str(id_num)+'_'+str(I)+'.hdf5')
