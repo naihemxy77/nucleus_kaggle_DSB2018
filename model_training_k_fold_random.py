@@ -2,7 +2,7 @@ from RandomGenClass import DataGenerator
 import InputOutputForNN as ionn
 import pandas as pd
 import numpy as np
-import cnn_deep_0313 as nn_model
+import model_unet_histo_11layer_20180314 as nn_model
 from keras.callbacks import EarlyStopping, ModelCheckpoint, History
 import h5py
 import pickle
@@ -11,7 +11,7 @@ import random
 
 #Train Test Split parameters
 n = 5
-id_num = 'Guo_0315_deep_'+str(n)+'fold'
+id_num = 'Mao_0318_unet_histo_'+str(n)+'fold'
 SEED = 932894
 #Confidence threshold for nuclei identification
 cutoff = 0.5
@@ -23,11 +23,11 @@ InputDim = [128,128]
 OutputDim = [100,100]
 Stride = [50,50]
 #Extract train data imageids
-train_df = train_df
-total_ids = list(train_df['ImageId'].values)
+#train_df = train_df
+#total_ids = list(train_df['ImageId'].values)
 #If just want to train fluorescent data (similarly, 1 for histo and 2 for bright)
-#train_df = train_df[train_df['hsv_cluster']==0]
-#total_ids = list(train_df.loc[train_df['hsv_cluster']==0,'ImageId'].values)
+train_df = train_df[train_df['hsv_cluster']==1]
+total_ids = list(train_df.loc[train_df['hsv_cluster']==1,'ImageId'].values)
 
 #Split images into cross-fold sets (note that pieces for one image always together belong to train/val set)
 kf = KFold(n_splits=n, shuffle=True, random_state=SEED)
@@ -40,8 +40,8 @@ def model_fitting(ids,I,train_df):
     val_ids = [total_ids[i] for i in ids[1]]
     #model fitting
     model = nn_model.model_gen(InputDim)
-    epochs_number = 30
-    batch_size = 32
+    epochs_number = 50
+    batch_size = 10
     earlyStopping = EarlyStopping(monitor='val_loss', patience=5, verbose=0, mode='min')
     mcp_save = ModelCheckpoint('model_'+str(id_num)+'_'+str(I)+'.hdf5', save_best_only=True, monitor='val_loss', mode='min')
     history = History()
@@ -100,4 +100,4 @@ for i in range(Test_data.shape[0]):
     OutputImage = np.where(OutputImage>cutoff,1,0)
     Test_Label.append((Test_data.loc[i,'ImageId'],OutputImage))
 print('Saving results...')
-pickle.dump(Test_Label,open( "Test_Label.p","wb" ))
+pickle.dump(Test_Label,open( "Test_Label_histo.p","wb" ))
