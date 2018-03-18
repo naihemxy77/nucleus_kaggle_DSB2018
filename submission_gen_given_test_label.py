@@ -1,3 +1,6 @@
+import matplotlib
+matplotlib.use('Agg')
+
 import numpy as np
 import pandas as pd
 import submission_encoding
@@ -9,7 +12,7 @@ import AggressiveSplit as sn
 ##Generate Test Masks and Submission files given pickle outputs from models
 ##In current file, if image type is not histological, then test masks will be
 ##predicted by the linear combination of otsu,iso and li.
-submissionfilename = 'unet_submission0315'
+submissionfilename = 'cnn_deep_submission0315'
 test_label = pickle.load(open( "Test_Label.p","rb" ))
 test_label = pd.DataFrame(test_label, columns=['ImageId','ImageOutput'])
 
