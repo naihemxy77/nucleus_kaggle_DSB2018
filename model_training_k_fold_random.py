@@ -79,7 +79,7 @@ for i in range(n):
     print(str(i)+'th run is starting...')
     model_fitting(ids[i],i,train_df)
 
-#Import test data pieces given image type: 'all','fluo','histo' or 'bright'
+#Import test data pieces given image type: 'all','fluo','histo' or 'bright' or 'others'
 Test_data = ionn.sub_fragments_extract(InputDim=InputDim,OutputDim=OutputDim,Stride=Stride,image_type='histo',train=False,reflection=False)
 print('Start to predict...')
 #pred_outputs_kfold = []
