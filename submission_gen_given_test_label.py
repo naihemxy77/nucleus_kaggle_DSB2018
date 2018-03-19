@@ -13,7 +13,7 @@ import AggressiveSplit as sn
 ##In current file, if image type is not histological, then test masks will be
 ##predicted by the linear combination of otsu,iso and li.
 submissionfilename = 'cnn_deep_submission0315'
-test_label = pickle.load(open( "Test_Label_histo.p","rb" ))
+test_label = pickle.load(open( "Test_Label.p","rb" ))
 test_label = pd.DataFrame(test_label, columns=['ImageId','ImageOutput'])
 
 final_label = []
@@ -22,6 +22,8 @@ for i in range(test_label.shape[0]):
     img = test_label.loc[i,'ImageOutput']
     if np.sum(img)>0.9*img.shape[0]*img.shape[1]:
         img = np.where(img>0,0,1)
+        img[:5,:5] = 1
+    if img.max()==0:
         img[:5,:5] = 1
     label_i = sn.aggressiveLabel(img.squeeze())
     final_label.append(label_i)
