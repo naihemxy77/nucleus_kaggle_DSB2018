@@ -56,7 +56,7 @@ class DataGenerator(object):
           if train_df.loc[train_df['ImageId']==ID,'hsv_cluster'] == 1:
               whole_img = whole_img/255
           else:
-              whole_img = (whole_img-whole_img.min())/(-whole_img.max()-whole_img.min())
+              whole_img = (whole_img-whole_img.min())/(whole_img.max()-whole_img.min())
           #
           height,width,_ = whole_img.shape
           starth = random.randint(0, height-self.dim_x)
