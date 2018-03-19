@@ -23,6 +23,8 @@ for i in range(test_label.shape[0]):
     if np.sum(img)>0.9*img.shape[0]*img.shape[1]:
         img = np.where(img>0,0,1)
         img[:5,:5] = 1
+    if img.max()==0:
+        img[:5,:5] = 1
     label_i = sn.aggressiveLabel(img.squeeze())
     final_label.append(label_i)
 test_label['ImageLabel'] = final_label
