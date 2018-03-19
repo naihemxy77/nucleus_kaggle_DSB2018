@@ -2,6 +2,7 @@
 import numpy as np
 import pandas as pd
 import pickle
+import data_norm
 
 def tileExtract(bigPic,x,y,tileSideLengthX,tileSideLengthY):
     # cut the image with specified size and origin at x,y
@@ -106,6 +107,8 @@ def sub_fragments_extract(InputDim=(128,128),OutputDim=(100,100),Stride=(50,50),
         df = df_all[df_all['hsv_cluster']==1]
     elif image_type == 'bright':
         df = df_all[df_all['hsv_cluster']==2]
+    elif image_type == 'others':
+        df = df_all[df_all['hsv_cluster']==4]
     else:
         raise ValueError('image_type has to be all, fluo, histo or bright ...')
     inputX,inputY = InputDim
@@ -116,9 +119,14 @@ def sub_fragments_extract(InputDim=(128,128),OutputDim=(100,100),Stride=(50,50),
     i = 1
     for index,row in df.iterrows():
         print('{:d}th image is processing ... ({:d}/{:d})'.format(index,i,df.shape[0]))
+        img = row['Image']
+        if row['hsv_cluster'] == 1:
+            img = data_norm.rgb_norm(img)
+        else:
+            img = data_norm.minmax_norm(img)
         ImageId = row['ImageId']
         ImageShape = row['Image'].shape[:2]
-        X = InputGeneration(img=row['Image'],inputX=inputX,inputY=inputY,outputX=outputX,outputY=outputY,strideX=strideX,strideY=strideY,reflection=reflection)
+        X = InputGeneration(img=img,inputX=inputX,inputY=inputY,outputX=outputX,outputY=outputY,strideX=strideX,strideY=strideY,reflection=reflection)
         if train:
             y = InputGeneration(img=row['ImageLabel'],inputX=inputX,inputY=inputY,outputX=outputX,outputY=outputY,strideX=strideX,strideY=strideY,reflection=reflection)
             #n,h,w,l = y.shape
