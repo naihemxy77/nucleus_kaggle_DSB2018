@@ -2,6 +2,7 @@
 import numpy as np
 import pickle
 import random
+import data_norm
 
 #random.seed(124335)
 #train_df = pickle.load(open("../input/train_df.p","rb"))
@@ -54,9 +55,9 @@ class DataGenerator(object):
           whole_img = train_df.loc[train_df['ImageId']==ID,'Image'].item()
           whole_label = train_df.loc[train_df['ImageId']==ID,'ImageLabel'].item()
           if train_df.loc[train_df['ImageId']==ID,'hsv_cluster'] == 1:
-              whole_img = whole_img/255
+              whole_img = data_norm.rgb_norm(whole_img)
           else:
-              whole_img = (whole_img-whole_img.min())/(whole_img.max()-whole_img.min())
+              whole_img = data_norm.minmax_norm(whole_img)
           #
           height,width,_ = whole_img.shape
           starth = random.randint(0, height-self.dim_x)
