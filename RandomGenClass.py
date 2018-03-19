@@ -54,7 +54,8 @@ class DataGenerator(object):
       for i, ID in enumerate(list_IDs_temp):
           whole_img = train_df.loc[train_df['ImageId']==ID,'Image'].item()
           whole_label = train_df.loc[train_df['ImageId']==ID,'ImageLabel'].item()
-          if train_df.loc[train_df['ImageId']==ID,'hsv_cluster'] == 1:
+          cluster = train_df.loc[train_df['ImageId']==ID,'hsv_cluster'].item()
+          if cluster == 1:
               whole_img = data_norm.rgb_norm(whole_img)
           else:
               whole_img = data_norm.minmax_norm(whole_img)
