@@ -12,7 +12,7 @@ import AggressiveSplit as sn
 ##Generate Test Masks and Submission files given pickle outputs from models
 ##In current file, if image type is not histological, then test masks will be
 ##predicted by the linear combination of otsu,iso and li.
-submissionfilename = 'cnn_deep_submission0315'
+submissionfilename = 'ZoomNet_submission0320'
 test_label = pickle.load(open( "Test_Label.p","rb" ))
 test_label = pd.DataFrame(test_label, columns=['ImageId','ImageOutput'])
 
