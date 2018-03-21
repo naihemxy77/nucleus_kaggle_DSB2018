@@ -7,7 +7,7 @@ from keras.layers.merge import concatenate
 np.random.seed(534899574)
 
 def cnn_block(X,f,k):
-    X = Conv2D(filters=f, kernel_size=(k,k),padding='same', activation='relu')(X)
+    X = Conv2D(filters=f, kernel_size=(k,k), kernel_initializer='he_normal', padding='same', activation='relu')(X)
     X = BatchNormalization()(X)
     X = Activation('relu')(X)
     return X
@@ -30,7 +30,7 @@ def model_gen(InputDim):
     local4 = cnn_block(local3, 3, 1)
     global5 = cnn_block(global4, 3, 1)
     combined = concatenate([inputs,local4,global5])
-    outputs = Conv2D(1,(1,1), activation='sigmoid')(combined)
+    outputs = Conv2D(1,(1,1), kernel_initializer='he_normal', activation='sigmoid')(combined)
     model = Model(inputs=[inputs], outputs=[outputs])
     adam = Adam(lr=0.0005, decay=0.0)
     model.compile(loss='binary_crossentropy',
