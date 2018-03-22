@@ -120,10 +120,10 @@ def sub_fragments_extract(InputDim=(128,128),OutputDim=(100,100),Stride=(50,50),
     for index,row in df.iterrows():
         print('{:d}th image is processing ... ({:d}/{:d})'.format(index,i,df.shape[0]))
         img = row['Image']
-        if row['hsv_cluster'] == 1:
-            img = data_norm.rgb_norm(img)
-        else:
+        if row['hsv_cluster'] == 0:
             img = data_norm.minmax_norm(img)
+        else:
+            img = data_norm.invert_norm(img)
         ImageId = row['ImageId']
         ImageShape = row['Image'].shape[:2]
         X = InputGeneration(img=img,inputX=inputX,inputY=inputY,outputX=outputX,outputY=outputY,strideX=strideX,strideY=strideY,reflection=reflection)
