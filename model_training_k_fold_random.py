@@ -11,7 +11,7 @@ import random
 
 #Train Test Split parameters
 n = 5
-id_num = 'Guo_0320_ZoomNet_'+str(n)+'fold'
+id_num = 'Guo_0322_ZoomNet_fluo_'+str(n)+'fold'
 SEED = 932894
 #Confidence threshold for nuclei identification
 cutoff = 0.5
@@ -23,11 +23,11 @@ InputDim = [128,128]
 OutputDim = [100,100]
 Stride = [50,50]
 #Extract train data imageids
-train_df = train_df
-total_ids = list(train_df['ImageId'].values)
+#train_df = train_df
+#total_ids = list(train_df['ImageId'].values)
 #If just want to train fluorescent data (similarly, 1 for histo and 2 for bright)
-#train_df = train_df[train_df['hsv_cluster']==0]
-#total_ids = list(train_df.loc[train_df['hsv_cluster']==0,'ImageId'].values)
+train_df = train_df[train_df['hsv_cluster']==0]
+total_ids = list(train_df.loc[train_df['hsv_cluster']==0,'ImageId'].values)
 
 #Split images into cross-fold sets (note that pieces for one image always together belong to train/val set)
 kf = KFold(n_splits=n, shuffle=True, random_state=SEED)
@@ -80,7 +80,7 @@ for i in range(n):
     model_fitting(ids[i],i,train_df)
 
 #Import test data pieces given image type: 'all','fluo','histo' or 'bright'
-Test_data = ionn.sub_fragments_extract(InputDim=InputDim,OutputDim=OutputDim,Stride=Stride,image_type='all',train=False,reflection=False)
+Test_data = ionn.sub_fragments_extract(InputDim=InputDim,OutputDim=OutputDim,Stride=Stride,image_type='fluo',train=False,reflection=False)
 print('Start to predict...')
 #pred_outputs_kfold = []
 for i in range(n):
