@@ -21,8 +21,8 @@ def model_gen(InputDim):
     local1 = cnn_block(extended_inputs, 16, 3, 'local1')
     local2 = cnn_block(local1, 16, 3, 'local2')
     local3 = cnn_block(local2, 16, 3, 'local3')
-    local1_o = Lambda(lambda x: x[2:380,2:380,:],output_shape=(378,378,16))(local1)
-    local2_o = Lambda(lambda x: x[1:379,1:379,:],output_shape=(378,378,16))(local2)
+    local1_o = Lambda(lambda x: x[:,2:380,2:380,:],output_shape=(378,378,16))(local1)
+    local2_o = Lambda(lambda x: x[:,1:379,1:379,:],output_shape=(378,378,16))(local2)
     mid1 = concatenate([local1_o,local2_o,local3])
     #global scan
     global1 = cnn_block(mid1, 32, 32, 'global1')
@@ -35,10 +35,10 @@ def model_gen(InputDim):
     global4 = Dropout(0.2)(global4)
     #local view
     mid_o = cnn_block(local3, 3, 1, 'mid_o')
-    local_view = Lambda(lambda x: x[125:253,125:253,:],output_shape=(128,128,3))(mid_o)
+    local_view = Lambda(lambda x: x[:,125:253,125:253,:],output_shape=(128,128,3))(mid_o)
     #global view
     global_o = cnn_block(global4, 3, 1, 'global_o')
-    global_view = Lambda(lambda x: x[63:191,63:191,:],output_shape=(128,128,3))(global_o)
+    global_view = Lambda(lambda x: x[:,63:191,63:191,:],output_shape=(128,128,3))(global_o)
     #combined different zooming view together
     combined = concatenate([inputs,local_view,global_view])
     combined2 = Conv2D(16,(1,1), kernel_initializer='he_normal', activation='relu', name='combined2')(combined)
