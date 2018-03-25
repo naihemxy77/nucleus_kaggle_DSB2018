@@ -148,12 +148,13 @@ def newNucleiBinarySplit(mask,thr):
     props = regionprops(mask)
     prop = props[0]
     mask00 = ndi.binary_fill_holes(mask)
+    holeArea = np.sum(np.asarray(mask00,dtype=np.int32)-mask)
     maskConv = convex_hull_image(mask00)
     maskB = tinyDottsRemove(maskConv-mask)
     notConv = np.sum(maskB)/np.sum(mask00)
     if(notConv<thr):
         return mask00
-    if prop.convex_area/prop.filled_area < 1.2:
+    if (prop.convex_area/prop.filled_area < 1.2) and (holeArea < 4):
         return mask00
     maskC = skeletonize(maskB)
     maskD = skeletonToConv(maskC)
