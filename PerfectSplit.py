@@ -153,7 +153,7 @@ def newNucleiBinarySplit(mask,thr):
     notConv = np.sum(maskB)/np.sum(mask00)
     if(notConv<thr):
         return mask00
-    if prop.convex_area/prop.filled_area < 1.1:
+    if prop.convex_area/prop.filled_area < 1.2:
         return mask00
     maskC = skeletonize(maskB)
     maskD = skeletonToConv(maskC)
