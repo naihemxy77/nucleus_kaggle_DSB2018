@@ -2,7 +2,7 @@ from RandomGenClass import DataGenerator
 import InputOutputForNN as ionn
 import pandas as pd
 import numpy as np
-import ZoomHeyNet_0323 as nn_model
+import ZoomNet_0320 as nn_model
 from keras.callbacks import EarlyStopping, ModelCheckpoint, History
 import h5py
 import pickle
@@ -11,7 +11,7 @@ import random
 
 #Train Test Split parameters
 n = 5
-id_num = 'Guo_0323_ZoomHeyNet_invert_'+str(n)+'fold'
+id_num = 'Guo_0324_ZoomNet_invert_dp15_'+str(n)+'fold'
 SEED = 932894
 #Confidence threshold for nuclei identification
 cutoff = 0.5
