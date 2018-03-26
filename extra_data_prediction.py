@@ -26,7 +26,7 @@ def model_predict(I,Test_data):
     model = nn_model.model_gen(InputDim)
     #test data prediction
     print(str(I)+'th cv model to predict...')
-    model.load_weights(filepath = './model/model_'+str(id_num)+'_'+str(I)+'.hdf5')
+    model.load_weights(filepath = './inputs/model_'+str(id_num)+'_'+str(I)+'.hdf5')
     Test_Label_I = []
     for t in range(Test_data.shape[0]):
         print(str(t)+'th image is being predicted...')
