@@ -141,6 +141,33 @@ def sub_fragments_extract(InputDim=(128,128),OutputDim=(100,100),Stride=(50,50),
     Piece_data = pd.DataFrame(details, columns=COL)
     return Piece_data
 
+def sub_fragments_extract_extra(InputDim=(128,128),OutputDim=(100,100),Stride=(50,50),reflection=False):
+    print('Loading pickle file ...')
+    df = pickle.load(open("./inputs/extra_df.p","rb"))
+
+    inputX,inputY = InputDim
+    outputX,outputY = OutputDim
+    strideX,strideY = Stride
+    details = []
+    print('Start to generate fragment datasets ...')
+    i = 1
+    for index,row in df.iterrows():
+        print('{:d}th image is processing ... ({:d}/{:d})'.format(index,i,df.shape[0]))
+        img = row['Image']
+        img = data_norm.invert_norm(img)
+        ImageId = row['ImageId']
+        ImageShape = row['Image'].shape[:2]
+        X = InputGeneration(img=img,inputX=inputX,inputY=inputY,outputX=outputX,outputY=outputY,strideX=strideX,strideY=strideY,reflection=reflection)
+        y = InputGeneration(img=row['ImageLabel'],inputX=inputX,inputY=inputY,outputX=outputX,outputY=outputY,strideX=strideX,strideY=strideY,reflection=reflection)
+        info = (ImageId,ImageShape,X,y)
+            
+        details.append(info)
+        i = i+1
+
+    COL = ['ImageId','ImageShape','X','y']
+
+    Piece_data = pd.DataFrame(details, columns=COL)
+    return Piece_data
 ####Here is one example
 
 #### %matplotlib inline # add this line if you are using a notebook
