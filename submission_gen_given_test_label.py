@@ -30,7 +30,7 @@ for i in range(test_label.shape[0]):
     img_rot = test_label_rot.loc[i,'ImageOutput']
     if test_label.loc[i,'ImageId'] == test_label_rot.loc[i,'ImageId']:
         tmp = np.rot90(img_rot,k=1,axes=(1,0))
-        img_combined = img+tmp
+        img_combined = (img+tmp)/2
     else:
         img_combined = img
         print(str(i)+'th labels do not match with each other!!!')
