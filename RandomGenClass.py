@@ -10,28 +10,28 @@ from skimage.transform import resize
 
 def data_augmentation(x_img,y_label,dim_x,dim_y):
     p = random.uniform(0,1)
-    if p < 0.25:
+    if p < 0.34:
         x_img_a = x_img
         y_label_a = y_label
-    elif p >= 0.25 and p < 0.5: #horizontal flip
+    elif p >= 0.34 and p < 0.67: #horizontal flip
         band_1_mirror_lr = np.flip(x_img[:,:,0], 0)
         band_2_mirror_lr = np.flip(x_img[:,:,1], 0)
         band_3_mirror_lr = np.flip(x_img[:,:,2], 0)
         x_img_a = np.dstack((band_1_mirror_lr, band_2_mirror_lr,band_3_mirror_lr))
         y_label_a = np.flip(y_label,0)
-    elif p >= 0.5 and p < 0.75: #vertical flip
+    else:#elif p >= 0.5 and p < 0.75: #vertical flip
         band_1_mirror_ud = np.flip(x_img[:,:,0], 1)
         band_2_mirror_ud = np.flip(x_img[:,:,1], 1)
         band_3_mirror_ud = np.flip(x_img[:,:,2], 1)
         x_img_a = np.dstack((band_1_mirror_ud, band_2_mirror_ud,band_3_mirror_ud))
         y_label_a = np.flip(y_label,1)
-    else: #0.5 zoom in
-        starth = random.randint(0, dim_x//2)
-        startw = random.randint(0, dim_y//2)
-        x_img_a = x_img[starth:starth+dim_x//2,startw:startw+dim_y//2,:]
-        y_label_a = y_label[starth:starth+dim_x//2,startw:startw+dim_y//2]
-        x_img_a = resize(x_img_a,(dim_x,dim_y), mode='constant',preserve_range=True)
-        y_label_a = resize(y_label_a,(dim_x,dim_y), mode='constant',preserve_range=True)
+#    else: #0.5 zoom in
+#        starth = random.randint(0, dim_x//2)
+#        startw = random.randint(0, dim_y//2)
+#        x_img_a = x_img[starth:starth+dim_x//2,startw:startw+dim_y//2,:]
+#        y_label_a = y_label[starth:starth+dim_x//2,startw:startw+dim_y//2]
+#        x_img_a = resize(x_img_a,(dim_x,dim_y), mode='constant',preserve_range=True)
+#        y_label_a = resize(y_label_a,(dim_x,dim_y), mode='constant',preserve_range=True)
     return x_img_a,y_label_a
 
 class DataGenerator(object):
