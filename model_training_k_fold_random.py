@@ -3,20 +3,22 @@ import InputOutputForNN as ionn
 import pandas as pd
 import numpy as np
 import ZoomNet_0320 as nn_model
-from keras.callbacks import EarlyStopping, ModelCheckpoint, History
+from keras.callbacks import EarlyStopping, ModelCheckpoint, History, ReduceLROnPlateau
 import h5py
 import pickle
 from sklearn.model_selection import KFold
 import random
+import data_norm
 
 #Train Test Split parameters
 n = 5
-id_num = 'Guo_0326_ZoomNet_invert_data_aug_'+str(n)+'fold'
+id_num = 'Guo_0315_deep_'+str(n)+'fold'
 SEED = 932894
 #Confidence threshold for nuclei identification
 cutoff = 0.5
 
 train_df = pickle.load(open("./inputs/train_df.p","rb"))
+
 random.seed(124335)
 #Fragment parameters
 InputDim = [128,128]
@@ -40,9 +42,9 @@ def model_fitting(ids,I,train_df):
     val_ids = [total_ids[i] for i in ids[1]]
     #model fitting
     model = nn_model.model_gen(InputDim)
-    epochs_number = 120
+    epochs_number = 30
     batch_size = 32
-    #earlyStopping = EarlyStopping(monitor='val_loss', patience=20, verbose=0, mode='min')
+    earlyStopping = EarlyStopping(monitor='val_loss', patience=5, verbose=0, mode='min')
     mcp_save = ModelCheckpoint('model_'+str(id_num)+'_'+str(I)+'.hdf5', save_best_only=True, monitor='val_loss', mode='min')
     history = History()
     params ={'dim_x': InputDim[0],
@@ -52,7 +54,7 @@ def model_fitting(ids,I,train_df):
              'shuffle': True}
     training_generator = DataGenerator(**params).generate(train_ids,train_df)
     validation_generator = DataGenerator(**params).generate(val_ids,train_df)
-    output_history = model.fit_generator(generator=training_generator, steps_per_epoch=len(train_ids)//batch_size, epochs=epochs_number, validation_data=validation_generator,validation_steps=len(val_ids)//batch_size, callbacks=[mcp_save,history])
+    output_history = model.fit_generator(generator=training_generator, steps_per_epoch=len(train_ids)//batch_size, epochs=epochs_number, validation_data=validation_generator,validation_steps=len(val_ids)//batch_size, callbacks=[earlyStopping,mcp_save,history])
     print('done.')
     df = pd.DataFrame.from_dict(history.history)
     df.to_csv('history_'+str(id_num)+'_'+str(I)+'.csv', sep='\t', index=True, float_format='%.4f')
@@ -101,3 +103,29 @@ for i in range(Test_data.shape[0]):
     Test_Label.append((Test_data.loc[i,'ImageId'],OutputImage))
 print('Saving results...')
 pickle.dump(Test_Label,open( "Test_Label.p","wb" ))
+
+del Test_data
+del Test_Label
+del pred_outputs_kfold
+#Import test data pieces (rotated) given image type: 'all','fluo','histo' or 'bright'
+Test_data_rot = ionn.sub_fragments_extract_rot(InputDim=InputDim,OutputDim=OutputDim,Stride=Stride,image_type='all',train=False,reflection=False)
+print('Start to predict...')
+#pred_outputs_kfold = []
+for i in range(n):
+    if i == 0:
+        pred_outputs_kfold=np.array(model_predict(i,Test_data_rot))
+    else:
+        pred_outputs_kfold=pred_outputs_kfold+np.array(model_predict(i,Test_data_rot))
+print(pred_outputs_kfold.shape)
+pred_outputs_kfold = pred_outputs_kfold/n
+print('Preparing test labels...')
+Test_Label_rot = []
+for i in range(Test_data_rot.shape[0]):
+    print(str(i)+'th model is processing...')
+    pred_test = pred_outputs_kfold[i]
+    pred_label = ionn.MidExtractProcess(pred_test,InputDim[0],InputDim[1],OutputDim[0],OutputDim[1])
+    OutputImage = ionn.OutputStitch(img_shape=Test_data_rot.loc[i,'ImageShape'],output=pred_label,strideX=Stride[0],strideY=Stride[1])
+    OutputImage = np.where(OutputImage>cutoff,1,0)
+    Test_Label_rot.append((Test_data_rot.loc[i,'ImageId'],OutputImage))
+print('Saving results...')
+pickle.dump(Test_Label_rot,open( "Test_Label_rot.p","wb" ))
