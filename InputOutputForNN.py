@@ -174,7 +174,7 @@ def sub_fragments_extract_rot(InputDim=(128,128),OutputDim=(100,100),Stride=(50,
         else:
             img = data_norm.invert_norm(img)
         ImageId = row['ImageId']
-        ImageShape = row['Image'].shape[:2]
+        ImageShape = img.shape[:2]
         X = InputGeneration(img=img,inputX=inputX,inputY=inputY,outputX=outputX,outputY=outputY,strideX=strideX,strideY=strideY,reflection=reflection)
         if train:
             y = InputGeneration(img=row['ImageLabel'],inputX=inputX,inputY=inputY,outputX=outputX,outputY=outputY,strideX=strideX,strideY=strideY,reflection=reflection)
