@@ -41,7 +41,7 @@ for i in range(test_label.shape[0]):
         img_combined[:5,:5] = 1
     if img_combined.max()==0:
         img_combined[:5,:5] = 1
-    label_i = sn.aggressiveLabel(img_combined)
+    label_i = sn.aggressiveLabel(img_combined.squeeze())
     final_label.append(label_i)
 #test_label = test_label.loc[selected_id,:]
 #test_label = test_label.reset_index(drop=True)
