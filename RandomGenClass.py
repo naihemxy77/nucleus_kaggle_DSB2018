@@ -92,7 +92,7 @@ class DataGenerator(object):
           startw = random.randint(0, width-self.dim_y)
           x_img = whole_img[starth:starth+self.dim_x,startw:startw+self.dim_y,:]
           y_label = whole_label[starth:starth+self.dim_x,startw:startw+self.dim_y]
-          x_img_a,y_label_a = data_augmentation(x_img,y_label)
+          x_img_a,y_label_a = data_augmentation(x_img,y_label,self.dim_x,self.dim_y)
           # Store volume
           X[i, :, :, :] = x_img_a
           # Store class
