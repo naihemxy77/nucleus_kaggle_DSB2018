@@ -141,6 +141,55 @@ def sub_fragments_extract(InputDim=(128,128),OutputDim=(100,100),Stride=(50,50),
     Piece_data = pd.DataFrame(details, columns=COL)
     return Piece_data
 
+def sub_fragments_extract_rot(InputDim=(128,128),OutputDim=(100,100),Stride=(50,50),image_type='all',train=True,reflection=False):
+    print('Loading pickle file ...')
+    if train:
+        df_all = pickle.load(open("./inputs/train_df.p","rb"))
+    else:
+        df_all = pickle.load(open("./inputs/test_df.p","rb"))
+    if image_type == 'all':
+        df = df_all
+    elif image_type == 'fluo':
+        df = df_all[df_all['hsv_cluster']==0]
+    elif image_type == 'histo':
+        df = df_all[df_all['hsv_cluster']==1]
+    elif image_type == 'bright':
+        df = df_all[df_all['hsv_cluster']==2]
+    elif image_type == 'others':
+        df = df_all[df_all['hsv_cluster']==4]
+    else:
+        raise ValueError('image_type has to be all, fluo, histo or bright ...')
+    inputX,inputY = InputDim
+    outputX,outputY = OutputDim
+    strideX,strideY = Stride
+    details = []
+    print('Start to generate fragment datasets ...')
+    i = 1
+    for index,row in df.iterrows():
+        print('{:d}th image is processing ... ({:d}/{:d})'.format(index,i,df.shape[0]))
+        img = row['Image']
+        img = np.dstack((np.rot90(img[:,:,0]), np.rot90(img[:,:,1]),np.rot90(img[:,:,2])))
+        if row['hsv_cluster'] == 0:
+            img = data_norm.minmax_norm(img)
+        else:
+            img = data_norm.invert_norm(img)
+        ImageId = row['ImageId']
+        ImageShape = row['Image'].shape[:2]
+        X = InputGeneration(img=img,inputX=inputX,inputY=inputY,outputX=outputX,outputY=outputY,strideX=strideX,strideY=strideY,reflection=reflection)
+        if train:
+            y = InputGeneration(img=row['ImageLabel'],inputX=inputX,inputY=inputY,outputX=outputX,outputY=outputY,strideX=strideX,strideY=strideY,reflection=reflection)
+            #n,h,w,l = y.shape
+            #y = np.reshape(y,(n,h,w))
+            info = (ImageId,ImageShape,X,y)
+        else: info = (ImageId,ImageShape,X)
+        details.append(info)
+        i = i+1
+    if train:
+        COL = ['ImageId','ImageShape','X','y']
+    else: COL = ['ImageId','ImageShape','X']
+    Piece_data = pd.DataFrame(details, columns=COL)
+    return Piece_data
+
 def sub_fragments_extract_extra(InputDim=(128,128),OutputDim=(100,100),Stride=(50,50),reflection=False):
     print('Loading pickle file ...')
     df = pickle.load(open("./inputs/extra_df.p","rb"))
