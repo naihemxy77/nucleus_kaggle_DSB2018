@@ -7,7 +7,7 @@ import submission_encoding
 import matplotlib.pyplot as plt
 import pickle
 from matplotlib.backends.backend_pdf import PdfPages
-import PerfectSplit as sn
+import AggressiveSplit as sn
 from skimage.morphology import square,binary_closing
 
 cutoff = 0.5
