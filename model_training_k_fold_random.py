@@ -12,12 +12,12 @@ import data_norm
 
 #Train Test Split parameters
 n = 5
-id_num = 'Guo_0315_deep_'+str(n)+'fold'
+id_num = 'Guo_0329_Zoom_inverse_extra_'+str(n)+'fold'
 SEED = 932894
 #Confidence threshold for nuclei identification
 cutoff = 0.5
 
-train_df = pickle.load(open("./inputs/train_df.p","rb"))
+train_df = pickle.load(open("./inputs/train_df_aug.p","rb"))
 
 random.seed(124335)
 #Fragment parameters
@@ -42,7 +42,7 @@ def model_fitting(ids,I,train_df):
     val_ids = [total_ids[i] for i in ids[1]]
     #model fitting
     model = nn_model.model_gen(InputDim)
-    epochs_number = 30
+    epochs_number = 120
     batch_size = 32
     earlyStopping = EarlyStopping(monitor='val_loss', patience=5, verbose=0, mode='min')
     mcp_save = ModelCheckpoint('model_'+str(id_num)+'_'+str(I)+'.hdf5', save_best_only=True, monitor='val_loss', mode='min')
