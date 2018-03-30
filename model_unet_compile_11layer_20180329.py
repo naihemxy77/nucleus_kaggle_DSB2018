@@ -1,4 +1,7 @@
 #Note: if run on Google GPU, you may want to install keras manually before you run the following codes
+#reference:https://keras.io/getting-started/functional-api-guide/#multi-input-and-multi-output-models
+#need to figure out whether LSTM is necessary
+
 from keras.models import Model
 from keras.layers import Input, LSTM, Dense
 from keras.layers.core import Dropout
