@@ -1,6 +1,6 @@
 #Note: if run on Google GPU, you may want to install keras manually before you run the following codes
 from keras.models import Model
-from keras.layers import Input, merge, Reshape
+from keras.layers import Input
 from keras.layers.core import Lambda
 from keras.layers.core import Dropout
 from keras.layers.convolutional import Conv2D, Conv2DTranspose
@@ -30,7 +30,7 @@ from keras.optimizers import Adam
 
 def get_unet(InputDim):
     inputs = Input((InputDim[0],InputDim[1],4))
-    main_input = Lambda(lambda x: x[:,:,:,0:3],output_shape=(InputDim[0],InputDim[1],3))(inputs)
+    main_input = Lambda(lambda x: x[:,:,0:3],output_shape=(InputDim[0],InputDim[1],3))(inputs)
     
     c1 = Conv2D(16, (3,3), activation='relu', kernel_initializer='he_normal', padding='same') (main_input)
     c1 = Dropout(0.15) (c1)
@@ -79,18 +79,19 @@ def get_unet(InputDim):
     # containing information about the entire sequence
     #lstm_out = LSTM(32)(c10)
     
-    #add a new input, in this case, is the outline
-    bound_input = Lambda(lambda x: x[:,:,:,3],output_shape=(InputDim[0],InputDim[1],1))(inputs)
-    bound_input = Reshape((InputDim[0],InputDim[1],1))(bound_input)
+   
+    
     u11 = Conv2DTranspose(16, (3,3), strides=(2,2), padding='same') (c10)
-    #u11 = merge([u11, c1_rest, a_matrix_now], mode='concat',concat_axis=3)
-    u11 = concatenate([u11, c1, bound_input])
+    #add a new input, in this case, is the outline
+    #bound_input = Lambda(lambda x: x[:,:,3],output_shape=(InputDim[0],InputDim[1],1))(inputs)
+    #u11 = merge([u11, c1, bound_input], mode='concat',concat_axis=3)
+    u11 = concatenate([u11, inputs], axis=3)
     c11 = Conv2D(16, (3,3), activation='relu', kernel_initializer='he_normal', padding='same') (u11)
     c11 = Dropout(0.15) (c11)
     
     outputs = Conv2D(1, (1, 1), activation='sigmoid') (c11)
 
-    model = Model(inputs=[inputs], outputs=[outputs])
+    model = Model(inputs, outputs=outputs)
     adam = Adam(lr=0.0005, decay=0.0)
     model.compile(optimizer=adam,loss='binary_crossentropy')
     return model
