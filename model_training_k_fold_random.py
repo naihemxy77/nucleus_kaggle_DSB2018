@@ -2,7 +2,7 @@ from RandomGenClass import DataGenerator
 import InputOutputForNN as ionn
 import pandas as pd
 import numpy as np
-import ZoomNet_0320 as nn_model
+import DenseNet_0331 as nn_model
 from keras.callbacks import EarlyStopping, ModelCheckpoint, History, ReduceLROnPlateau
 import h5py
 import pickle
@@ -12,12 +12,12 @@ import data_norm
 
 #Train Test Split parameters
 n = 5
-id_num = 'Guo_0329_Zoom_inverse_extra_'+str(n)+'fold'
+id_num = 'Guo_0401_DenseNet_'+str(n)+'fold'
 SEED = 932894
 #Confidence threshold for nuclei identification
 cutoff = 0.5
 
-train_df = pickle.load(open("./inputs/train_df_aug.p","rb"))
+train_df = pickle.load(open("./inputs/train_df.p","rb"))
 
 random.seed(124335)
 #Fragment parameters
@@ -44,11 +44,12 @@ def model_fitting(ids,I,train_df):
     model = nn_model.model_gen(InputDim)
     epochs_number = 120
     batch_size = 32
+    #earlyStopping = EarlyStopping(monitor='val_loss', patience=5, verbose=0, mode='min')
     mcp_save = ModelCheckpoint('model_'+str(id_num)+'_'+str(I)+'.hdf5', save_best_only=True, monitor='val_loss', mode='min')
     history = History()
     params ={'dim_x': InputDim[0],
              'dim_y': InputDim[1],
-             'dim_z': 3,
+             'dim_z': 9,
              'batch_size': batch_size,
              'shuffle': True}
     training_generator = DataGenerator(**params).generate(train_ids,train_df)
@@ -98,7 +99,7 @@ for i in range(Test_data.shape[0]):
     pred_test = pred_outputs_kfold[i]
     pred_label = ionn.MidExtractProcess(pred_test,InputDim[0],InputDim[1],OutputDim[0],OutputDim[1])
     OutputImage = ionn.OutputStitch(img_shape=Test_data.loc[i,'ImageShape'],output=pred_label,strideX=Stride[0],strideY=Stride[1])
-    OutputImage = np.where(OutputImage>cutoff,1,0)
+    #OutputImage = np.where(OutputImage>cutoff,1,0)
     Test_Label.append((Test_data.loc[i,'ImageId'],OutputImage))
 print('Saving results...')
 pickle.dump(Test_Label,open( "Test_Label.p","wb" ))
@@ -124,7 +125,7 @@ for i in range(Test_data_rot.shape[0]):
     pred_test = pred_outputs_kfold[i]
     pred_label = ionn.MidExtractProcess(pred_test,InputDim[0],InputDim[1],OutputDim[0],OutputDim[1])
     OutputImage = ionn.OutputStitch(img_shape=Test_data_rot.loc[i,'ImageShape'],output=pred_label,strideX=Stride[0],strideY=Stride[1])
-    OutputImage = np.where(OutputImage>cutoff,1,0)
+    #OutputImage = np.where(OutputImage>cutoff,1,0)
     Test_Label_rot.append((Test_data_rot.loc[i,'ImageId'],OutputImage))
 print('Saving results...')
 pickle.dump(Test_Label_rot,open( "Test_Label_rot.p","wb" ))
