@@ -98,7 +98,7 @@ def sub_fragments_extract(InputDim=(128,128),OutputDim=(100,100),Stride=(50,50),
     if train:
         df_all = pickle.load(open("./inputs/train_df.p","rb"))
     else:
-        df_all = pickle.load(open("./inputs/test_df.p","rb"))
+        df_all = pickle.load(open("./inputs/test_df_bg.p","rb"))
     if image_type == 'all':
         df = df_all
     elif image_type == 'fluo':
@@ -121,7 +121,7 @@ def sub_fragments_extract(InputDim=(128,128),OutputDim=(100,100),Stride=(50,50),
         print('{:d}th image is processing ... ({:d}/{:d})'.format(index,i,df.shape[0]))
         img = row['Image']
         #if row['hsv_cluster'] == 0:
-        img = data_norm.minmax_norm_extend(img)
+        img = data_norm.minmax_norm(img)
         #else:
         #    img = data_norm.invert_norm(img)
         ImageId = row['ImageId']
@@ -146,7 +146,7 @@ def sub_fragments_extract_rot(InputDim=(128,128),OutputDim=(100,100),Stride=(50,
     if train:
         df_all = pickle.load(open("./inputs/train_df.p","rb"))
     else:
-        df_all = pickle.load(open("./inputs/test_df.p","rb"))
+        df_all = pickle.load(open("./inputs/test_df_bg.p","rb"))
     if image_type == 'all':
         df = df_all
     elif image_type == 'fluo':
@@ -170,7 +170,7 @@ def sub_fragments_extract_rot(InputDim=(128,128),OutputDim=(100,100),Stride=(50,
         img = row['Image']
         img = np.dstack((np.rot90(img[:,:,0]), np.rot90(img[:,:,1]),np.rot90(img[:,:,2])))
         #if row['hsv_cluster'] == 0:
-        img = data_norm.minmax_norm_extend(img)
+        img = data_norm.minmax_norm(img)
         #else:
         #    img = data_norm.invert_norm(img)
         ImageId = row['ImageId']
