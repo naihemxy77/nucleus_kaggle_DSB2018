@@ -56,20 +56,20 @@ def model_gen(InputDim):
     inputs_e = reflect_extend(inputs_s,InputDim)
     #Local
     loc_view = cnn_block(inputs_e,8,3,1,'local')
-    inputs_s_l = Lambda(lambda x: x[:,1:-2,1:-2,:], output_shape=(138,138,3), name='input_loc')(inputs_e)
+    inputs_s_l = Lambda(lambda x: x[:,1:139,1:139,:], output_shape=(138,138,3), name='input_loc')(inputs_e)
     loc_view_c = concatenate([loc_view,inputs_s_l])
     loc_view_c = squeeze_excite_block(loc_view_c)
     #Middle
     mid_view = cnn_block(loc_view_c,16,3,2,'middle')
-    inputs_s_m = Lambda(lambda x: x[:,3:-4,3:-4,:], output_shape=(134,134,3), name='input_mid')(inputs_e)
-    loc_v_m = Lambda(lambda x: x[:,1:-2,1:-2,:], output_shape=(134,134,8), name='local_mid')(loc_view)
+    inputs_s_m = Lambda(lambda x: x[:,3:137,3:137,:], output_shape=(134,134,3), name='input_mid')(inputs_e)
+    loc_v_m = Lambda(lambda x: x[:,1:135,1:135,:], output_shape=(134,134,8), name='local_mid')(loc_view)
     mid_view_c = concatenate([mid_view,loc_v_m,inputs_s_m])
     mid_view_c = squeeze_excite_block(mid_view_c)
     #Global
     glo_view = cnn_block(mid_view_c,32,3,3,'global')
-    inputs_s_g = Lambda(lambda x: x[:,6:-7,6:-7,:], output_shape=(128,128,3), name='input_glo')(inputs_e)
-    loc_v_g = Lambda(lambda x: x[:,5:-6,5:-6,:], output_shape=(128,128,8), name='local_glo')(loc_view)
-    mid_v_g = Lambda(lambda x: x[:,3:-4,3:-4,:], output_shape=(128,128,16), name='middle_glo')(mid_view)
+    inputs_s_g = Lambda(lambda x: x[:,6:134,6:134,:], output_shape=(128,128,3), name='input_glo')(inputs_e)
+    loc_v_g = Lambda(lambda x: x[:,5:133,5:133,:], output_shape=(128,128,8), name='local_glo')(loc_view)
+    mid_v_g = Lambda(lambda x: x[:,3:131,3:131,:], output_shape=(128,128,16), name='middle_glo')(mid_view)
     glo_view_c = concatenate([glo_view,mid_v_g,loc_v_g,inputs_s_g,inputs_b])
     glo_view_c = squeeze_excite_block(glo_view_c)
     #Final processing
