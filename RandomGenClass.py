@@ -81,21 +81,21 @@ class DataGenerator(object):
       for i, ID in enumerate(list_IDs_temp):
           whole_img = train_df.loc[train_df['ImageId']==ID,'Image'].item()
           whole_label = train_df.loc[train_df['ImageId']==ID,'ImageLabel'].item()
-          cluster = train_df.loc[train_df['ImageId']==ID,'hsv_cluster'].item()
-          if cluster == 0:
-              whole_img = data_norm.minmax_norm(whole_img)
-          else:
-              whole_img = data_norm.invert_norm(whole_img)
+          #cluster = train_df.loc[train_df['ImageId']==ID,'hsv_cluster'].item()
+          #if cluster == 0:
+          whole_img = data_norm.minmax_norm_extend(whole_img)
+          #else:
+          #    whole_img = data_norm.invert_norm(whole_img)
           #
           height,width,_ = whole_img.shape
           starth = random.randint(0, height-self.dim_x)
           startw = random.randint(0, width-self.dim_y)
           x_img = whole_img[starth:starth+self.dim_x,startw:startw+self.dim_y,:]
           y_label = whole_label[starth:starth+self.dim_x,startw:startw+self.dim_y]
-          x_img_a,y_label_a = data_augmentation(x_img,y_label,self.dim_x,self.dim_y)
+          #x_img_a,y_label_a = data_augmentation(x_img,y_label,self.dim_x,self.dim_y)
           # Store volume
-          X[i, :, :, :] = x_img_a
+          X[i, :, :, :] = x_img
           # Store class
-          y[i,:,:,0] = y_label_a
+          y[i,:,:,0] = y_label
 
       return X, y
