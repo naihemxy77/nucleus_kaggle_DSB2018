@@ -83,5 +83,5 @@ def model_gen(InputDim):
     print('Model Construction Finished.')
     return model
 
-model=model_gen([128,128])
-model.summary()
+#model=model_gen([128,128])
+#model.summary()
