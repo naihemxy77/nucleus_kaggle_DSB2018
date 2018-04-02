@@ -8,6 +8,7 @@ from keras.callbacks import EarlyStopping, ModelCheckpoint, History
 import h5py
 import pickle
 
+
 #Train Test Split parameters
 id_num = 'trial'
 r = 0.1
