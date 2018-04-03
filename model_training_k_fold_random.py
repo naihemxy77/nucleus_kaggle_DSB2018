@@ -2,7 +2,7 @@ from RandomGenClass import DataGenerator
 import InputOutputForNN as ionn
 import pandas as pd
 import numpy as np
-import DenseNet_0331 as nn_model
+import ZoomNet_jac_0402 as nn_model
 from keras.callbacks import EarlyStopping, ModelCheckpoint, History, ReduceLROnPlateau
 import h5py
 import pickle
@@ -12,13 +12,13 @@ import data_norm
 
 #Train Test Split parameters
 n = 5
-id_num = 'Guo_0401_DenseNet_'+str(n)+'fold'
+id_num = 'Guo_0402_Zoom_jac_'+str(n)+'fold'
 SEED = 932894
 #Confidence threshold for nuclei identification
 cutoff = 0.5
 
 train_df = pickle.load(open("./inputs/train_df.p","rb"))
-train_df = data_norm.img_extend(train_df)
+#train_df = data_norm.img_extend(train_df)
 
 random.seed(124335)
 #Fragment parameters
@@ -50,7 +50,7 @@ def model_fitting(ids,I,train_df):
     history = History()
     params ={'dim_x': InputDim[0],
              'dim_y': InputDim[1],
-             'dim_z': 9,
+             'dim_z': 3,
              'batch_size': batch_size,
              'shuffle': True}
     training_generator = DataGenerator(**params).generate(train_ids,train_df)
