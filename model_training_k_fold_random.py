@@ -20,6 +20,15 @@ cutoff = 0.5
 train_df = pickle.load(open("./inputs/train_df.p","rb"))
 #train_df = data_norm.img_extend(train_df)
 
+from keras import backend as K
+# set GPU memory 
+if('tensorflow' == K.backend()):
+    import tensorflow as tf
+    from keras.backend.tensorflow_backend import set_session
+
+    config = tf.ConfigProto()
+    config.gpu_options.allow_growth = True
+    sess = tf.Session(config=config)
 random.seed(124335)
 #Fragment parameters
 InputDim = [128,128]
