@@ -19,7 +19,7 @@ def jaccard_loss(y_true, y_pred):
     return 1-jaccard_coef(y_true, y_pred)
 
 def combined_loss(y_true, y_pred):
-    binary_loss = -K.mean(y_true*K.log(y_pred)+(1-y_true)*K.log(1-y_pred))
+    binary_loss = K.mean(K.binary_crossentropy(y_true, y_pred), axis=-1)#-K.mean(y_true*K.log(y_pred)+(1-y_true)*K.log(1-y_pred))
     jac = jaccard_coef(y_true, y_pred)
     combined_loss = binary_loss-K.log(jac)
     return combined_loss
