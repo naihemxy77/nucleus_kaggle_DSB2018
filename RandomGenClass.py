@@ -82,10 +82,10 @@ class DataGenerator(object):
           whole_img = train_df.loc[train_df['ImageId']==ID,'Image'].item()
           whole_label = train_df.loc[train_df['ImageId']==ID,'ImageLabel'].item()
           #cluster = train_df.loc[train_df['ImageId']==ID,'hsv_cluster'].item()
-          #if cluster == 0:
-          whole_img = data_norm.minmax_norm(whole_img)
-          #else:
-          #    whole_img = data_norm.invert_norm(whole_img)
+          if cluster == 0:
+              whole_img = data_norm.minmax_norm(whole_img)
+          else:
+              whole_img = data_norm.invert_norm(whole_img)
           #
           height,width,_ = whole_img.shape
           starth = random.randint(0, height-self.dim_x)
