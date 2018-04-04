@@ -113,7 +113,7 @@ def aggressiveLabel(mask,minimum=5,thr = 0.036):
     return tmpMask
 
 def reLabel(tmp,maskLabeled,kk,thr,minimum=5):
-    newLabeled = newNucleiBinarySplit(maskLabeled,thr=thr)
+    newLabeled = newNucleiBinarySplit(maskLabeled,thr=thr,minimum=minimum)
     vstTmp = valset(newLabeled)
     if len(vstTmp)==1:
         tmp[np.where(newLabeled!=0)] = kk[0]
@@ -144,12 +144,12 @@ def skeletonToConv(mask):
 # In[6]:
 
 
-def newNucleiBinarySplit(mask,thr):
+def newNucleiBinarySplit(mask,thr,minimum):
     props = regionprops(mask)
     prop = props[0]
     mask00 = np.asarray(ndi.binary_fill_holes(mask),dtype=np.int32)
     maskConv = convex_hull_image(mask00)
-    maskB = tinyDottsRemove(maskConv-mask)
+    maskB = tinyDottsRemove(maskConv-mask,minimum=minimum)
     notConv = np.sum(maskB)/np.sum(mask00)
     if(notConv<thr):
         return mask00
