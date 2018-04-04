@@ -155,6 +155,8 @@ def newNucleiBinarySplit(mask,thr):
         return mask00
     if prop.convex_area/prop.filled_area < 1.08:
         return mask00
+    if bianBubian(mask00)>5.9:
+        return mask00
     maskC = skeletonize(maskB)
     maskD = skeletonToConv(maskC)
     maskE = imgToMask(np.asarray(maskConv,dtype=np.int32) - maskD)
@@ -165,5 +167,7 @@ def newNucleiBinarySplit(mask,thr):
     labels = watershed(-mask, markers, mask=mask00)
     return labels
 
-
+def bianBubian(dot):
+    reg = regionprops(dot)[0]
+    return reg.major_axis_length / reg.minor_axis_length
 
