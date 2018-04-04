@@ -2,7 +2,8 @@
 import numpy as np
 import pandas as pd
 import pickle
-import data_norm
+#import data_norm
+#from GetInput import getInput
 
 def tileExtract(bigPic,x,y,tileSideLengthX,tileSideLengthY):
     # cut the image with specified size and origin at x,y
@@ -93,12 +94,13 @@ def OutputStitch(img_shape,output,strideX,strideY):
     result = bigPic[xlen:2*xlen,ylen:2*ylen,:]/((outputX/strideX)*(outputY/strideY))
     return result
 
-def sub_fragments_extract(InputDim=(128,128),OutputDim=(100,100),Stride=(50,50),image_type='all',train=True,reflection=False):
+def sub_fragments_extract(InputDim=(128,128),OutputDim=(68,68),Stride=(34,34),image_type='all',train=True,reflection=True):
     print('Loading pickle file ...')
     if train:
-        df_all = pickle.load(open("./inputs/train_df.p","rb"))
+        df_all = getInput() #pickle.load(open("../inputs/train_df.p","rb"))
     else:
-        df_all = pickle.load(open("./inputs/test_df.p","rb"))
+        #df_all = pickle.load(open("../inputs/test_df.p","rb"))
+        df_all = pd.read_pickle("../inputs/TestAgain.p")
     if image_type == 'all':
         df = df_all
     elif image_type == 'fluo':
@@ -119,13 +121,9 @@ def sub_fragments_extract(InputDim=(128,128),OutputDim=(100,100),Stride=(50,50),
     i = 1
     for index,row in df.iterrows():
         print('{:d}th image is processing ... ({:d}/{:d})'.format(index,i,df.shape[0]))
-        img = row['Image']
-        if row['hsv_cluster'] == 1:
-            img = data_norm.rgb_norm(img)
-        else:
-            img = data_norm.minmax_norm(img)
+        img = row['ImageInput']
         ImageId = row['ImageId']
-        ImageShape = row['Image'].shape[:2]
+        ImageShape = row['ImageInput'].shape[:2]
         X = InputGeneration(img=img,inputX=inputX,inputY=inputY,outputX=outputX,outputY=outputY,strideX=strideX,strideY=strideY,reflection=reflection)
         if train:
             y = InputGeneration(img=row['ImageLabel'],inputX=inputX,inputY=inputY,outputX=outputX,outputY=outputY,strideX=strideX,strideY=strideY,reflection=reflection)
@@ -140,52 +138,3 @@ def sub_fragments_extract(InputDim=(128,128),OutputDim=(100,100),Stride=(50,50),
     else: COL = ['ImageId','ImageShape','X']
     Piece_data = pd.DataFrame(details, columns=COL)
     return Piece_data
-
-####Here is one example
-
-#### %matplotlib inline # add this line if you are using a notebook
-#import numpy as np
-#import pandas as pd
-#import os
-#from matplotlib import pyplot as plt
-#
-#smpID = '00ae65c1c6631ae6f2be1a449902976e6eb8483bf6b0740d00530220832c6d3e'
-#tmpIm = plt.imread("../input/stage1_train/"+smpID+"/images/"+smpID+'.png')
-#
-##plt.imshow(tmpIm) # add this line if you are using a notebook. It's just a preview of the original image.
-#
-#InputDataset = InputGeneration(img=ch0,inputX=100,inputY=100,outputX=80,outputY=80,strideX=40,strideY=40)
-#print(InputDataset.shape)
-#
-#OutputDataset = fakeProcess(wtf3,inputX=100,inputY=100,outputX=80,outputY=80)
-#print(OutputDataset.shape)
-#
-#OutputImage = OutputStitch(img=ch0,output=wtf4,strideX=40,strideY=40)
-##plt.imshow(OutputImage)
-
-##Further illustrations
-#Piece_data = sub_pieces_extract(InputDim=(128,128),OutputDim=(100,100),Stride=(50,50),image_type='histo',train=True,reflection=False)
-#h = 7
-#w = 8
-#I = 10
-#x = Piece_data.loc[I,'X']
-#y = Piece_data.loc[I,'y']
-#image_shape = Piece_data.loc[I,'ImageShape']
-#fig,ax = plt.subplots(h,w)
-#for i in range(h):
-#    for j in range(w):
-#        ax[i,j].imshow(x[w*i+j])
-#        ax[i,j].axis('off')
-#plt.show()
-#y_show = y.reshape((h*w,128,128))
-#fig,ax = plt.subplots(h,w)
-#for i in range(h):
-#    for j in range(w):
-#        ax[i,j].imshow(y_show[w*i+j])
-#        ax[i,j].axis('off')
-#plt.show()
-#
-#y_pred=ionn.MidExtractProcess(inputData=y,inputX=128,inputY=128,outputX=100,outputY=100)
-#OutputImage = ionn.OutputStitch(img_shape=image_shape,output=y_pred,strideX=50,strideY=50)
-#O_Image_show = OutputImage.reshape(OutputImage.shape[0],OutputImage.shape[1])
-#plt.imshow(O_Image_show)
