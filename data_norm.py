@@ -17,13 +17,14 @@ def get_domimant_colors(img, top_colors=2):
     return results
 
 def minmax_norm(img):
-    return (img-img.min())/(img.max()-img.min())
+    smooth = 1e-12
+    return (img-img.min()+smooth)/(img.max()-img.min()+smooth)
 
 def rgb_norm(img):
     return img/255
 
 def invert_norm(img):
-    img = (img-img.min())/(img.max()-img.min())
+    img = minmax_norm(img)
     img = 1-img
     return img
 
