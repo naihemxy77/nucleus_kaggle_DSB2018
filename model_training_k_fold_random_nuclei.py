@@ -16,7 +16,7 @@ SEED = 932894
 #Confidence threshold for nuclei identification
 cutoff = 0.5
 
-train_df = pickle.load(open("./inputs/train_df.p","rb"))
+train_df = pickle.load(open("./inputs/train_df2.p","rb"))
 recluster = pickle.load(open('./inputs/recluster.p','rb'))
 train_df = pd.merge(train_df, recluster, left_on=['ImageId'],
               right_on=['ImageId'],
