@@ -63,7 +63,7 @@ def getSubinfo(img_id,df,output_shape):
 
 output_shape = (128,128)
 for i in range(train_df.shape[0]):
-    print(str(i)+'th image is processing...')
+    #print(str(i)+'th image is processing...')
     img_id = train_df.loc[i,'ImageId']
     tmp = getSubinfo(img_id,train_df,output_shape)
     if i == 0:
