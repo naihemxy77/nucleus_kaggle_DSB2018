@@ -51,7 +51,7 @@ def model_gen(InputDim):
     outputs = Conv2D(1,(1,1), kernel_initializer='he_normal', activation='sigmoid')(combined)
     model = Model(inputs=[inputs], outputs=[outputs])
     adam = Adam(lr=0.0005, decay=0.0)
-    model.compile(loss=combined_loss,
+    model.compile(loss=jaccard_loss,
                   optimizer=adam,
                   metrics=['accuracy'])
     print('Model Construction Finished.')
