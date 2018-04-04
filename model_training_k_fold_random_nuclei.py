@@ -101,7 +101,7 @@ def model_fitting(ids,I,train_df):
     history = History()
     params ={'dim_x': InputDim[0],
              'dim_y': InputDim[1],
-             'dim_z': 9,
+             'dim_z': 3,
              'batch_size': batch_size,
              'shuffle': True}
     training_generator = DataGenerator(**params).generate(train_ids,train_df)
