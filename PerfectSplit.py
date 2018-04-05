@@ -1,4 +1,3 @@
-
 # coding: utf-8
 
 # In[1]:
@@ -30,6 +29,42 @@ from ImageUtilities import *
 
 
 # In[4]:
+
+def getNeighborColor(center,mat):
+    x,y = center
+    x = int(round(x))
+    y = int(round(y))
+    i=1
+    colorSet = set(mat[x-i:x+i,y-i:y+i].ravel().tolist())
+    if(0 in colorSet):
+        colorSet.remove(0)
+    while(len(colorSet)<2):
+        i+=1
+        colorSet = set(mat[x-i:x+i,y-i:y+i].ravel().tolist())
+        if(0 in colorSet):
+            colorSet.remove(0)
+        pass
+    colorSet.remove(mat[x,y])
+    if len(colorSet)==1:
+        return colorSet.pop()
+    else:
+        print("More than one choice for merging.")
+        colorSet = list(colorSet)
+        ii = colorSet[0]
+        xi,yi = center_of_mass(getLabeled(mat,ii))
+        dist = (xi-x)**2+(yi-y)**2
+        res = ii
+        for ii in colorSet[1:]:
+            tmpxi,tmpyi = center_of_mass(getLabeled(mat,ii))
+            tmpdist = (tmpxi-x)**2+(tmpyi-y)**2
+            if tmpdist<dist:
+                xi = tmpxi
+                yi = tmpyi
+                dist = tmpdist
+                res = ii
+                pass
+            pass
+        return res
 
 
 def split_mask_v1(mask):
@@ -90,12 +125,12 @@ def split_mask_v1(mask):
                 cv2.line(thresh,p1,p2, [0, 0, 0], 2)
     return thresh 
 
-def aggressiveLabel(mask,minimum=5,thr = 0.036):
+def aggressiveLabel(mask,thr = 0.036):
     mask0 = label(mask)
     vst = valset(mask0)
     vlstToDel = []
     for val in vst:
-        if np.sum(mask0==val)<minimum:
+        if np.sum(mask0==val)<5:
             vlstToDel.append(val)
             mask0[np.where(mask0==val)]=0
             pass
@@ -103,17 +138,26 @@ def aggressiveLabel(mask,minimum=5,thr = 0.036):
     for val in vlstToDel:
         vst.remove(val)
         pass
-
+    
     tmpMask = np.zeros_like(mask)
     k = [max(vst)+1]
     for i in vst:
         lb = getLabeled(lbimg=mask0,lbval=i)
-        reLabel(tmp=tmpMask,maskLabeled=lb,kk=k,thr = thr,minimum=5)
+        reLabel(tmp=tmpMask,maskLabeled=lb,kk=k,thr = thr)
         pass
+    vlst = list(valset(tmpMask))
+    for ii in vlst:
+        smallDot = getLabeled(tmpMask,ii)
+        if np.sum(smallDot)<=5:
+            cent = center_of_mass(smallDot)
+            tmpMask[np.where(tmpMask==ii)]=getNeighborColor(center=cent,mat=tmpMask)
+            pass
+        pass
+    # find the pixels dropped during split and remerge them 
     return tmpMask
 
-def reLabel(tmp,maskLabeled,kk,thr,minimum=5):
-    newLabeled = newNucleiBinarySplit(maskLabeled,thr=thr,minimum=minimum)
+def reLabel(tmp,maskLabeled,kk,thr):
+    newLabeled = newNucleiBinarySplit(maskLabeled,thr=thr)
     vstTmp = valset(newLabeled)
     if len(vstTmp)==1:
         tmp[np.where(newLabeled!=0)] = kk[0]
@@ -122,7 +166,7 @@ def reLabel(tmp,maskLabeled,kk,thr,minimum=5):
     for ii in vstTmp:
         mk = getLabeled(newLabeled,ii)
         #wtf.append(deepcopy(mk))
-        reLabel(tmp = tmp,maskLabeled = mk,kk=kk,thr = thr,minimum=minimum)
+        reLabel(tmp = tmp,maskLabeled = mk,kk=kk,thr = thr)
         kk[0]+=1
         pass
     return
@@ -144,12 +188,13 @@ def skeletonToConv(mask):
 # In[6]:
 
 
-def newNucleiBinarySplit(mask,thr,minimum):
+def newNucleiBinarySplit(mask,thr):
     props = regionprops(mask)
     prop = props[0]
     mask00 = np.asarray(ndi.binary_fill_holes(mask),dtype=np.int32)
     maskConv = convex_hull_image(mask00)
-    maskB = tinyDottsRemove(maskConv-mask,minimum=minimum)
+    area = np.sum(mask00)
+    maskB = tinyDottsRemove(maskConv-mask, minimum=min(10,area/31))
     notConv = np.sum(maskB)/np.sum(mask00)
     if(notConv<thr):
         return mask00
@@ -159,12 +204,35 @@ def newNucleiBinarySplit(mask,thr,minimum):
         return mask00
     maskC = skeletonize(maskB)
     maskD = skeletonToConv(maskC)
+    lbD = label(maskD)
+    dictD = {}
+    if (np.sum(maskD)<=10)and((lbD.max())>1):
+        maskD = maskD.copy().astype(np.uint8)
+        for c in valset(lbD):
+            dictD[c] = np.sum(getLabeled(lbD,c))
+            pass
+        cols = list(dictD.keys())
+        cols.sort(key=lambda x:dictD[x],reverse=True)
+        x0,y0 = center_of_mass(getLabeled(lbD,cols[0]))
+        x1,y1 = center_of_mass(getLabeled(lbD,cols[1]))
+        x0 = int(round(x0))
+        y0 = int(round(y0))
+        x1 = int(round(x1))
+        y1 = int(round(y1))
+        p0 = (y0,x0)
+        p1 = (y1,x1)
+        cv2.line(maskD,p0,p1, [1, 1, 1], 2)
+        pass
     maskE = imgToMask(np.asarray(maskConv,dtype=np.int32) - maskD)
     maskF = split_mask_v1(maskE)
     maskF[np.where(mask00==0)]=0
     markers = ndi.label(maskF)[0]
     markers[np.where(mask00==0)]=0
     labels = watershed(-mask, markers, mask=mask00)
+    #vlst = list(valset(labels))
+    #for ii in vlst:
+    #    if(np.sum(getLabeled(labels,ii))<5):
+    #        labels[np.where(getLabeled(labels,ii)>0)]=0
     return labels
 
 def bianBubian(dot):
