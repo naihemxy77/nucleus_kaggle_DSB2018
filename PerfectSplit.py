@@ -35,6 +35,20 @@ def getNeighborColor(center,mat):
     x,y = center
     x = int(round(x))
     y = int(round(y))
+    candidatesX = [x-1,x,x+1]
+    candidatesY = [y-1,y,y+1]
+    
+    jb = 0
+    while mat[x,y]==0 and jb<9:
+        for iii in candidateX:
+            for jjj in candidateY:
+                x=iii
+                y=jjj
+                jb+=1
+                pass
+            pass
+        pass
+    
     i=1
     colorSet = set(mat[x-i:x+i,y-i:y+i].ravel().tolist())
     if(0 in colorSet):
@@ -45,7 +59,10 @@ def getNeighborColor(center,mat):
         if(0 in colorSet):
             colorSet.remove(0)
         pass
-    colorSet.remove(mat[x,y])
+    if mat[x,y] in colorSet:
+        colorSet.remove(mat[x,y])
+    else:
+        print("Damn it! Let's pray!")
     if len(colorSet)==1:
         return colorSet.pop()
     else:
