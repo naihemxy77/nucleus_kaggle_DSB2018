@@ -4,7 +4,7 @@
 
 
 ##reference: https://www.kaggle.com/voglinio/separating-nuclei-masks-using-convexity-defects
-get_ipython().magic('matplotlib inline')
+#get_ipython().magic('matplotlib inline')
 import numpy as np 
 import pandas as pd 
 import os
@@ -14,6 +14,7 @@ from skimage.measure import regionprops
 from skimage.morphology import label,binary_dilation,binary_closing,binary_erosion,binary_opening,disk,convex_hull_image,skeletonize,watershed,remove_small_objects
 from skimage.feature import peak_local_max
 from scipy import ndimage as ndi
+from scipy.ndimage.measurements import center_of_mass
 
 
 # In[2]:
