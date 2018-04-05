@@ -2,7 +2,7 @@ from RandomGenClass import DataGenerator
 import InputOutputForNN as ionn
 import pandas as pd
 import numpy as np
-import ZoomNet_jac_0402 as nn_model
+import ZoomNet_0320 as nn_model
 from keras.callbacks import EarlyStopping, ModelCheckpoint, History, ReduceLROnPlateau
 import h5py
 import pickle
@@ -12,7 +12,7 @@ import data_norm
 
 #Train Test Split parameters
 n = 5
-id_num = 'Guo_0402_Zoom_jac_'+str(n)+'fold'
+id_num = 'Guo_0405_Zoom_invert_'+str(n)+'fold'
 SEED = 932894
 #Confidence threshold for nuclei identification
 cutoff = 0.5
@@ -52,7 +52,7 @@ def model_fitting(ids,I,train_df):
     val_ids = [total_ids[i] for i in ids[1]]
     #model fitting
     model = nn_model.model_gen(InputDim)
-    epochs_number = 120
+    epochs_number = 150
     batch_size = 32
     #earlyStopping = EarlyStopping(monitor='val_loss', patience=5, verbose=0, mode='min')
     mcp_save = ModelCheckpoint('model_'+str(id_num)+'_'+str(I)+'.hdf5', save_best_only=True, monitor='val_loss', mode='min')
