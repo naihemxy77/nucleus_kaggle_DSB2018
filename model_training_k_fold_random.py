@@ -12,7 +12,7 @@ import data_norm
 
 #Train Test Split parameters
 n = 5
-id_num = 'Guo_0405_Zoom_invert_'+str(n)+'fold'
+id_num = 'Guo_0405_Zoom_invert_fluo_'+str(n)+'fold'
 SEED = 932894
 #Confidence threshold for nuclei identification
 cutoff = 0.5
@@ -35,11 +35,11 @@ InputDim = [128,128]
 OutputDim = [100,100]
 Stride = [50,50]
 #Extract train data imageids
-train_df = train_df
-total_ids = list(train_df['ImageId'].values)
+#train_df = train_df
+#total_ids = list(train_df['ImageId'].values)
 #If just want to train fluorescent data (similarly, 1 for histo and 2 for bright)
-#train_df = train_df[train_df['hsv_cluster']==0]
-#total_ids = list(train_df.loc[train_df['hsv_cluster']==0,'ImageId'].values)
+train_df = train_df[train_df['hsv_cluster']==0]
+total_ids = list(train_df.loc[train_df['hsv_cluster']==0,'ImageId'].values)
 
 #Split images into cross-fold sets (note that pieces for one image always together belong to train/val set)
 kf = KFold(n_splits=n, shuffle=True, random_state=SEED)
@@ -54,7 +54,7 @@ def model_fitting(ids,I,train_df):
     model = nn_model.model_gen(InputDim)
     epochs_number = 150
     batch_size = 32
-    #earlyStopping = EarlyStopping(monitor='val_loss', patience=5, verbose=0, mode='min')
+    earlyStopping = EarlyStopping(monitor='val_loss', patience=20, verbose=0, mode='min')
     mcp_save = ModelCheckpoint('model_'+str(id_num)+'_'+str(I)+'.hdf5', save_best_only=True, monitor='val_loss', mode='min')
     history = History()
     params ={'dim_x': InputDim[0],
@@ -64,7 +64,7 @@ def model_fitting(ids,I,train_df):
              'shuffle': True}
     training_generator = DataGenerator(**params).generate(train_ids,train_df)
     validation_generator = DataGenerator(**params).generate(val_ids,train_df)
-    output_history = model.fit_generator(generator=training_generator, steps_per_epoch=len(train_ids)//batch_size, epochs=epochs_number, validation_data=validation_generator,validation_steps=len(val_ids)//batch_size, callbacks=[mcp_save,history])
+    output_history = model.fit_generator(generator=training_generator, steps_per_epoch=len(train_ids)//batch_size, epochs=epochs_number, validation_data=validation_generator,validation_steps=len(val_ids)//batch_size, callbacks=[earlyStopping,mcp_save,history])
     print('done.')
     df = pd.DataFrame.from_dict(history.history)
     df.to_csv('history_'+str(id_num)+'_'+str(I)+'.csv', sep='\t', index=True, float_format='%.4f')
