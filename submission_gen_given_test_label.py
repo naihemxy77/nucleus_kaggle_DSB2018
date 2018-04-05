@@ -14,7 +14,7 @@ cutoff = 0.5
 ##Generate Test Masks and Submission files given pickle outputs from models
 ##In current file, if image type is not histological, then test masks will be
 ##predicted by the linear combination of otsu,iso and li.
-submissionfilename = 'Zoom_invert_jac'
+submissionfilename = 'Zoom_invert_0405'
 test_label = pickle.load(open( "Test_Label.p","rb" ))
 test_label = pd.DataFrame(test_label, columns=['ImageId','ImageOutput'])
 
