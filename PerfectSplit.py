@@ -40,8 +40,8 @@ def getNeighborColor(center,mat):
     
     jb = 0
     while mat[x,y]==0 and jb<9:
-        for iii in candidateX:
-            for jjj in candidateY:
+        for iii in candidatesX:
+            for jjj in candidatesY:
                 x=iii
                 y=jjj
                 jb+=1
