@@ -7,7 +7,8 @@ from keras.layers.merge import concatenate
 np.random.seed(534899574)
 
 def cnn_block(X,f,k):
-    X = Conv2D(filters=f, kernel_size=(k,k), kernel_initializer='he_normal', padding='same', activation='relu')(X)
+    #X = Conv2D(filters=f, kernel_size=(k,k), kernel_initializer='he_normal', padding='same', activation='relu')(X)
+    X = Conv2D(filters=f, kernel_size=(k,k), kernel_initializer='he_normal', padding='same')(X)
     X = BatchNormalization()(X)
     X = Activation('relu')(X)
     return X
