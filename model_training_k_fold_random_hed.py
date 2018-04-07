@@ -1,5 +1,5 @@
-from RandomGenClass import DataGenerator
-import InputOutputForNN as ionn
+from RandomGenClass_hed import DataGenerator
+import InputOutputForNN_hed as ionn
 import pandas as pd
 import numpy as np
 import HEDnet_0406 as nn_model
