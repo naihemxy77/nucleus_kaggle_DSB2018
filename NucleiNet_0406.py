@@ -5,6 +5,7 @@ from keras.layers import Reshape, Dense, multiply, Dropout, GlobalAveragePooling
 from keras.optimizers import Adam
 from keras.layers.merge import concatenate
 import keras.backend as K
+import tensorflow as tf
 
 np.random.seed(234374632)
 
@@ -19,6 +20,13 @@ def jaccard_coef(y_true, y_pred):
 def jaccard_loss(y_true, y_pred):
     return 1-jaccard_coef(y_true, y_pred)
 
+def iou(y_pred,y_true):
+    logits=tf.reshape(y_pred, [-1])
+    trn_labels=tf.reshape(y_true, [-1])
+    inter=tf.reduce_sum(tf.multiply(logits,trn_labels))
+    union=tf.reduce_sum(tf.subtract(tf.add(logits,trn_labels),tf.multiply(logits,trn_labels)))
+    loss=tf.subtract(tf.constant(1.0, dtype=tf.float32),tf.divide(inter,union))
+    return loss
 
 def cnn_block(X,f,k,name):
     X = Conv2D(filters=f, kernel_size=(k,k), kernel_initializer='he_normal', padding='same', name=name+'_c')(X)
@@ -61,7 +69,7 @@ def model_gen(InputDim):
     outputs = Conv2D(filters=1, kernel_size=(1,1), kernel_initializer='he_normal', padding='same', activation='sigmoid')(final_concat)
     model = Model(inputs=[inputs], outputs=[outputs])
     adam = Adam(lr=0.0005, decay=0.0)
-    model.compile(loss=jaccard_loss,
+    model.compile(loss=iou,
                   optimizer=adam,
                   metrics=['accuracy'])
     print('Model Construction Finished.')
