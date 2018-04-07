@@ -2,7 +2,7 @@ from RandomGenClass import DataGenerator
 import InputOutputForNN as ionn
 import pandas as pd
 import numpy as np
-import ZoomNet_0320 as nn_model
+import NucleiNet_0406 as nn_model
 from keras.callbacks import EarlyStopping, ModelCheckpoint, History, ReduceLROnPlateau
 import h5py
 import pickle
@@ -12,7 +12,7 @@ import data_norm
 
 #Train Test Split parameters
 n = 5
-id_num = 'Guo_0405_Zoom_invert_fluo_'+str(n)+'fold'
+id_num = 'Guo_0406_Nuclei_invert_'+str(n)+'fold'
 SEED = 932894
 #Confidence threshold for nuclei identification
 cutoff = 0.5
@@ -35,11 +35,11 @@ InputDim = [128,128]
 OutputDim = [100,100]
 Stride = [50,50]
 #Extract train data imageids
-#train_df = train_df
-#total_ids = list(train_df['ImageId'].values)
+train_df = train_df
+total_ids = list(train_df['ImageId'].values)
 #If just want to train fluorescent data (similarly, 1 for histo and 2 for bright)
-train_df = train_df[train_df['hsv_cluster']==0]
-total_ids = list(train_df.loc[train_df['hsv_cluster']==0,'ImageId'].values)
+#train_df = train_df[train_df['hsv_cluster']==0]
+#total_ids = list(train_df.loc[train_df['hsv_cluster']==0,'ImageId'].values)
 
 #Split images into cross-fold sets (note that pieces for one image always together belong to train/val set)
 kf = KFold(n_splits=n, shuffle=True, random_state=SEED)
