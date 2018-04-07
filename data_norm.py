@@ -17,16 +17,22 @@ def get_domimant_colors(img, top_colors=2):
     return results
 
 def minmax_norm(img):
-    smooth = 1e-12
-    return (img-img.min()+smooth)/(img.max()-img.min()+smooth)
+    return (img-img.min())/(img.max()-img.min())
 
 def rgb_norm(img):
     return img/255
 
 def invert_norm(img):
-    img = minmax_norm(img)
+    img = (img-img.min())/(img.max()-img.min())
     img = 1-img
     return img
+
+def minmax_per_layer(img):
+    _,_,n = img.shape
+    img_new = np.zeros_like(img)
+    for i in range(n):
+        img_new[:,:,i] = minmax_norm(img[:,:,i])
+    return img_new
 
 def bg_extend(img,color_num=2):
     colors = get_domimant_colors(img,top_colors=color_num)
