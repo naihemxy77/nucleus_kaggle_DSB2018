@@ -79,7 +79,7 @@ for i in range(n):
     print(str(i)+'th run is starting...')
     model_fitting(ids[i],i,train_df)
 
-#Import test data pieces given image type: 'all','fluo','histo' or 'bright' or 'others'
+#Import test data pieces given image type: 'all','fluo','histo' or 'bright'
 Test_data = ionn.sub_fragments_extract(InputDim=InputDim,OutputDim=OutputDim,Stride=Stride,image_type='all',train=False,reflection=False)
 print('Start to predict...')
 #pred_outputs_kfold = []
@@ -97,7 +97,33 @@ for i in range(Test_data.shape[0]):
     pred_test = pred_outputs_kfold[i]
     pred_label = ionn.MidExtractProcess(pred_test,InputDim[0],InputDim[1],OutputDim[0],OutputDim[1])
     OutputImage = ionn.OutputStitch(img_shape=Test_data.loc[i,'ImageShape'],output=pred_label,strideX=Stride[0],strideY=Stride[1])
-    OutputImage = np.where(OutputImage>cutoff,1,0)
+    #OutputImage = np.where(OutputImage>cutoff,1,0)
     Test_Label.append((Test_data.loc[i,'ImageId'],OutputImage))
 print('Saving results...')
-pickle.dump(Test_Label,open( "/home/mao47/Kaggle_nuclei/Test_Label_all__iou_0406.p","wb" ))
+pickle.dump(Test_Label,open( "Test_Label.p","wb" ))
+
+del Test_data
+del Test_Label
+del pred_outputs_kfold
+#Import test data pieces (rotated) given image type: 'all','fluo','histo' or 'bright'
+Test_data_rot = ionn.sub_fragments_extract_rot(InputDim=InputDim,OutputDim=OutputDim,Stride=Stride,image_type='all',train=False,reflection=False)
+print('Start to predict...')
+#pred_outputs_kfold = []
+for i in range(n):
+    if i == 0:
+        pred_outputs_kfold=np.array(model_predict(i,Test_data_rot))
+    else:
+        pred_outputs_kfold=pred_outputs_kfold+np.array(model_predict(i,Test_data_rot))
+print(pred_outputs_kfold.shape)
+pred_outputs_kfold = pred_outputs_kfold/n
+print('Preparing test labels...')
+Test_Label_rot = []
+for i in range(Test_data_rot.shape[0]):
+    print(str(i)+'th model is processing...')
+    pred_test = pred_outputs_kfold[i]
+    pred_label = ionn.MidExtractProcess(pred_test,InputDim[0],InputDim[1],OutputDim[0],OutputDim[1])
+    OutputImage = ionn.OutputStitch(img_shape=Test_data_rot.loc[i,'ImageShape'],output=pred_label,strideX=Stride[0],strideY=Stride[1])
+    #OutputImage = np.where(OutputImage>cutoff,1,0)
+    Test_Label_rot.append((Test_data_rot.loc[i,'ImageId'],OutputImage))
+print('Saving results...')
+pickle.dump(Test_Label_rot,open( "Test_Label_rot.p","wb" ))
