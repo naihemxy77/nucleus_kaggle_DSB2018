@@ -16,7 +16,7 @@ SEED = 932894
 #Confidence threshold for nuclei identification
 cutoff = 0.5
 
-train_df = pickle.load(open("/home/mao47/Kaggle_nuclei/inputs/train_df.p","rb"))
+train_df = pickle.load(open("./inputs/train_df.p","rb"))
 random.seed(124335)
 #Fragment parameters
 InputDim = [128,128]
@@ -40,7 +40,7 @@ def model_fitting(ids,I,train_df):
     val_ids = [total_ids[i] for i in ids[1]]
     #model fitting
     model = nn_model.get_unet(InputDim)
-    epochs_number = 200
+    epochs_number = 300
     batch_size = 20
     #earlyStopping = EarlyStopping(monitor='val_loss', patience=20, verbose=0, mode='min')
     mcp_save = ModelCheckpoint('model_'+str(id_num)+'_'+str(I)+'.hdf5', save_best_only=True, monitor='val_loss', mode='min')
@@ -64,7 +64,7 @@ def model_predict(I,Test_data):
     model = nn_model.get_unet(InputDim)
     #test data prediction
     print(str(I)+'th cv model to predict...')
-    model.load_weights(filepath = '/home/mao47/Kaggle_nuclei/model_'+str(id_num)+'_'+str(I)+'.hdf5')
+    model.load_weights(filepath = 'model_'+str(id_num)+'_'+str(I)+'.hdf5')
     Test_Label_I = []
     for t in range(Test_data.shape[0]):
         print(str(t)+'th image is being predicted...')
