@@ -11,7 +11,7 @@ import random
 
 #Train Test Split parameters
 n = 8
-id_num = 'Mao_0406_unet_all_iou_'+str(n)+'fold'
+id_num = 'Mao_0407_unet_all_iou_300epoch_'+str(n)+'fold'
 SEED = 932894
 #Confidence threshold for nuclei identification
 cutoff = 0.5
