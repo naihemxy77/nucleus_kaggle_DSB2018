@@ -98,7 +98,7 @@ def get_unet(InputDim):
     outputs = Conv2D(1, (1, 1), activation='sigmoid') (c11)
 
     model = Model(inputs=[inputs], outputs=[outputs])
-    adam = Adam(lr=0.0005, decay=0.0)
+    adam = Adam(lr=0.0005, decay=0.0, amsgrad=True)
     #model.compile(optimizer=adam,loss='binary_crossentropy')
     model.compile(loss=iou,
                   optimizer=adam,
