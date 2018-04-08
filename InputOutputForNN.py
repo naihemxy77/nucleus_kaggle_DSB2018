@@ -2,7 +2,7 @@
 import numpy as np
 import pandas as pd
 import pickle
-import data_norm
+import data_norm_invert as data_norm
 
 def tileExtract(bigPic,x,y,tileSideLengthX,tileSideLengthY):
     # cut the image with specified size and origin at x,y
