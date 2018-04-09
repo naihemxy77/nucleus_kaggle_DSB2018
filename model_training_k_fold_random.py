@@ -12,7 +12,7 @@ import data_norm
 
 #Train Test Split parameters
 n = 8
-id_num = 'Guo_0409_Zoom_invert_'+str(n)+'fold'
+id_num = 'Guo_0409_Zoom_invert_combined_loss_'+str(n)+'fold'
 SEED = 932894
 #Confidence threshold for nuclei identification
 cutoff = 0.5
