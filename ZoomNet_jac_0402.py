@@ -24,7 +24,7 @@ def iou(y_pred,y_true):
     trn_labels=tf.reshape(y_true, [-1])
     inter=tf.reduce_sum(tf.multiply(logits,trn_labels))
     union=tf.reduce_sum(tf.subtract(tf.add(logits,trn_labels),tf.multiply(logits,trn_labels)))
-    loss=tf.divide(inter,union)#tf.subtract(tf.constant(1.0, dtype=tf.float32),tf.divide(inter,union))
+    loss=tf.subtract(tf.constant(1.0, dtype=tf.float32),tf.divide(inter,union))
     return loss
 
 def combined_loss(y_true, y_pred):
@@ -60,7 +60,7 @@ def model_gen(InputDim):
     outputs = Conv2D(1,(1,1), kernel_initializer='he_normal', activation='sigmoid')(combined)
     model = Model(inputs=[inputs], outputs=[outputs])
     adam = Adam(lr=0.0005, decay=0.0)
-    model.compile(loss=combined_loss,
+    model.compile(loss=iou,
                   optimizer=adam,
                   metrics=['accuracy'])
     print('Model Construction Finished.')
