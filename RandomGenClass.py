@@ -29,7 +29,7 @@ class DataGenerator(object):
           imax = int(len(indexes))
           for i in range(imax):
               # Find list of IDs
-              list_IDs_temp = indexes[i]#[list_IDs[k] for k in indexes[i*self.batch_size:(i+1)*self.batch_size]]
+              list_IDs_temp = list_IDs[indexes[i]]#[list_IDs[k] for k in indexes[i*self.batch_size:(i+1)*self.batch_size]]
 
               # Generate data
               X, y = self.__data_generation(list_IDs_temp,train_df)
