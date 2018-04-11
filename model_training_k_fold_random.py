@@ -2,7 +2,7 @@ from RandomGenClass import DataGenerator
 import InputOutputForNN as ionn
 import pandas as pd
 import numpy as np
-import NucleiNet_advanced_0409 as nn_model
+import ZoomNet_jac_0402 as nn_model
 from keras.callbacks import EarlyStopping, ModelCheckpoint, History, ReduceLROnPlateau
 import h5py
 import pickle
@@ -12,12 +12,12 @@ import data_norm
 
 #Train Test Split parameters
 n = 8
-id_num = 'Guo_0409_Nuclei_advanced_'+str(n)+'fold'
+id_num = 'Guo_0410_zoom_new_masks_'+str(n)+'fold'
 SEED = 932894
 #Confidence threshold for nuclei identification
 cutoff = 0.5
 
-train_df = pickle.load(open("./inputs/train_df.p","rb"))
+train_df = pickle.load(open("./inputs/train_df3.p","rb"))
 #train_df = data_norm.img_extend(train_df)
 
 from keras import backend as K
