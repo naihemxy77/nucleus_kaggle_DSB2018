@@ -73,7 +73,7 @@ def model_fitting(ids,I,train_df):
     del model
 
 def model_predict(I,Test_data):
-    model = nn_model.model_gen(InputDim)
+    model = nn_model.get_unet(InputDim)
     #test data prediction
     print(str(I)+'th cv model to predict...')
     model.load_weights(filepath = 'model_'+str(id_num)+'_'+str(I)+'.hdf5')
