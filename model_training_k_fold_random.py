@@ -2,7 +2,7 @@ from RandomGenClass import DataGenerator
 import InputOutputForNN as ionn
 import pandas as pd
 import numpy as np
-import ZoomNet_jac_0402 as nn_model
+import model_unet_compile_iou_loss20180403 as nn_model
 from keras.callbacks import EarlyStopping, ModelCheckpoint, History, ReduceLROnPlateau
 import h5py
 import pickle
@@ -12,7 +12,7 @@ import data_norm
 
 #Train Test Split parameters
 n = 8
-id_num = 'Guo_0411_zoom_extra_'+str(n)+'fold'
+id_num = 'Mao_0407_unet_extra_iou_300epoch_'+str(n)+'fold'
 SEED = 932894
 #Confidence threshold for nuclei identification
 cutoff = 0.5
@@ -51,7 +51,7 @@ def model_fitting(ids,I,train_df):
     train_ids = [total_ids[i] for i in ids[0]]
     val_ids = [total_ids[i] for i in ids[1]]
     #model fitting
-    model = nn_model.model_gen(InputDim)
+    model = nn_model.get_unet(InputDim)
     epochs_number = 300
     batch_size = 32
     #earlyStopping = EarlyStopping(monitor='val_loss', patience=20, verbose=0, mode='min')
@@ -59,7 +59,7 @@ def model_fitting(ids,I,train_df):
     history = History()
     params ={'dim_x': InputDim[0],
              'dim_y': InputDim[1],
-             'dim_z': 3,
+             'dim_z': 4,
              'batch_size': batch_size,
              'shuffle': True}
     training_generator = DataGenerator(**params).generate(train_ids,train_df)
