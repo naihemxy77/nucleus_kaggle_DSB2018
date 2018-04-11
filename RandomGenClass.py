@@ -52,8 +52,8 @@ class DataGenerator(object):
       y = np.empty((self.batch_size, self.dim_x, self.dim_y, 1), dtype = int)
 
       # Generate data
-      whole_img = train_df.loc[train_df['ImageId']==list_IDs_temp,'Image']
-      whole_label = train_df.loc[train_df['ImageId']==list_IDs_temp,'ImageLabel']
+      whole_img = train_df.loc[train_df['ImageId']==list_IDs_temp,'Image'].item()
+      whole_label = train_df.loc[train_df['ImageId']==list_IDs_temp,'ImageLabel'].item()
       whole_img = data_norm.invert_norm(whole_img)
       height,width,_ = whole_img.shape
       for i in range(self.batch_size):
