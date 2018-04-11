@@ -11,13 +11,13 @@ import random
 import data_norm
 
 #Train Test Split parameters
-n = 8
-id_num = 'Guo_0410_zoom_new_masks_'+str(n)+'fold'
+n = 10
+id_num = 'Guo_0411_zoom_extra_'+str(n)+'fold'
 SEED = 932894
 #Confidence threshold for nuclei identification
 cutoff = 0.5
 
-train_df = pickle.load(open("./inputs/train_df3.p","rb"))
+train_df = pickle.load(open("./inputs/extra_df.p","rb"))
 #train_df = data_norm.img_extend(train_df)
 
 from keras import backend as K
@@ -64,7 +64,7 @@ def model_fitting(ids,I,train_df):
              'shuffle': True}
     training_generator = DataGenerator(**params).generate(train_ids,train_df)
     validation_generator = DataGenerator(**params).generate(val_ids,train_df)
-    output_history = model.fit_generator(generator=training_generator, steps_per_epoch=len(train_ids)//batch_size, epochs=epochs_number, validation_data=validation_generator,validation_steps=len(val_ids)//batch_size, callbacks=[mcp_save,history])
+    output_history = model.fit_generator(generator=training_generator, steps_per_epoch=27, epochs=epochs_number, validation_data=validation_generator,validation_steps=3, callbacks=[mcp_save,history])
     print('done.')
     df = pd.DataFrame.from_dict(history.history)
     df.to_csv('history_'+str(id_num)+'_'+str(I)+'.csv', sep='\t', index=True, float_format='%.4f')
