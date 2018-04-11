@@ -120,10 +120,10 @@ def sub_fragments_extract(InputDim=(128,128),OutputDim=(100,100),Stride=(50,50),
     for index,row in df.iterrows():
         print('{:d}th image is processing ... ({:d}/{:d})'.format(index,i,df.shape[0]))
         img = row['Image']
-        if row['hsv_cluster'] == 0:
-            img = data_norm.minmax_norm(img)
-        else:
-            img = data_norm.invert_norm(img)
+        #if row['hsv_cluster'] == 0:
+        #    img = data_norm.minmax_norm(img)
+        #else:
+        img = data_norm.invert_norm(img)
         ImageId = row['ImageId']
         ImageShape = row['Image'].shape[:2]
         X = InputGeneration(img=img,inputX=inputX,inputY=inputY,outputX=outputX,outputY=outputY,strideX=strideX,strideY=strideY,reflection=reflection)
@@ -169,10 +169,10 @@ def sub_fragments_extract_rot(InputDim=(128,128),OutputDim=(100,100),Stride=(50,
         print('{:d}th image is processing ... ({:d}/{:d})'.format(index,i,df.shape[0]))
         img = row['Image']
         img = np.dstack((np.rot90(img[:,:,0]), np.rot90(img[:,:,1]),np.rot90(img[:,:,2])))
-        if row['hsv_cluster'] == 0:
-            img = data_norm.minmax_norm(img)
-        else:
-            img = data_norm.invert_norm(img)
+        #if row['hsv_cluster'] == 0:
+        #    img = data_norm.minmax_norm(img)
+        #else:
+        img = data_norm.invert_norm(img)
         ImageId = row['ImageId']
         ImageShape = img.shape[:2]
         X = InputGeneration(img=img,inputX=inputX,inputY=inputY,outputX=outputX,outputY=outputY,strideX=strideX,strideY=strideY,reflection=reflection)
