@@ -2,7 +2,7 @@
 import numpy as np
 import pickle
 import random
-import data_norm
+import data_norm_invert as data_norm
 from skimage.transform import resize
 
 #random.seed(124335)
@@ -10,7 +10,7 @@ from skimage.transform import resize
 
 class DataGenerator(object):
   'Generates data for Keras'
-  def __init__(self, dim_x = 128, dim_y = 128, dim_z = 3, batch_size = 32, shuffle = True):
+  def __init__(self, dim_x = 128, dim_y = 128, dim_z = 4, batch_size = 32, shuffle = True):
       'Initialization'
       self.dim_x = dim_x
       self.dim_y = dim_y
