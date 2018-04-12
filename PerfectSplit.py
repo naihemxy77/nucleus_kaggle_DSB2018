@@ -151,7 +151,8 @@ def aggressiveLabel(mask,thr = 0.036):
     for val in vlstToDel:
         vst.remove(val)
         pass
-    
+    if len(vst)==0:
+        return label(mask)
     tmpMask = np.zeros_like(mask)
     k = [max(vst)+1]
     for i in vst:
