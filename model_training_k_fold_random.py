@@ -54,6 +54,7 @@ def model_fitting(ids,I,train_df):
     model = nn_model.model_gen(InputDim)
     epochs_number = 300
     batch_size = 32
+    image_number_per_batch = 16
     #earlyStopping = EarlyStopping(monitor='val_loss', patience=20, verbose=0, mode='min')
     mcp_save = ModelCheckpoint('model_'+str(id_num)+'_'+str(I)+'.hdf5', save_best_only=True, monitor='val_loss', mode='min')
     history = History()
@@ -61,10 +62,11 @@ def model_fitting(ids,I,train_df):
              'dim_y': InputDim[1],
              'dim_z': 3,
              'batch_size': batch_size,
+             'batch_image': image_number_per_batch,
              'shuffle': True}
     training_generator = DataGenerator(**params).generate(train_ids,train_df)
     validation_generator = DataGenerator(**params).generate(val_ids,train_df)
-    output_history = model.fit_generator(generator=training_generator, steps_per_epoch=len(train_ids)//batch_size, epochs=epochs_number, validation_data=validation_generator,validation_steps=len(val_ids)//batch_size, callbacks=[mcp_save,history])
+    output_history = model.fit_generator(generator=training_generator, steps_per_epoch=len(train_ids)//image_number_per_batch, epochs=epochs_number, validation_data=validation_generator,validation_steps=len(val_ids)//image_number_per_batch, callbacks=[mcp_save,history])
     print('done.')
     df = pd.DataFrame.from_dict(history.history)
     df.to_csv('history_'+str(id_num)+'_'+str(I)+'.csv', sep='\t', index=True, float_format='%.4f')
