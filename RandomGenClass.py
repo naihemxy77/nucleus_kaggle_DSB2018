@@ -10,12 +10,13 @@ from skimage.transform import resize
 
 class DataGenerator(object):
   'Generates data for Keras'
-  def __init__(self, dim_x = 128, dim_y = 128, dim_z = 3, batch_size = 32, shuffle = True):
+  def __init__(self, dim_x = 128, dim_y = 128, dim_z = 3, batch_size = 32, batch_image = 16, shuffle = True):
       'Initialization'
       self.dim_x = dim_x
       self.dim_y = dim_y
       self.dim_z = dim_z
       self.batch_size = batch_size
+      self.batch_image = 8
       self.shuffle = shuffle
 
   def generate(self, list_IDs,train_df):
@@ -26,10 +27,10 @@ class DataGenerator(object):
           indexes = self.__get_exploration_order(list_IDs)
 
           # Generate batches
-          imax = int(len(indexes))
+          imax = int(len(indexes)//self.batch_image)
           for i in range(imax):
               # Find list of IDs
-              list_IDs_temp = list_IDs[indexes[i]]#[list_IDs[k] for k in indexes[i*self.batch_size:(i+1)*self.batch_size]]
+              list_IDs_temp = [list_IDs[k] for k in indexes[i*self.batch_image:(i+1)*self.batch_image]]
 
               # Generate data
               X, y = self.__data_generation(list_IDs_temp,train_df)
@@ -50,24 +51,24 @@ class DataGenerator(object):
       # Initialization
       X = np.empty((self.batch_size, self.dim_x, self.dim_y, self.dim_z))
       y = np.empty((self.batch_size, self.dim_x, self.dim_y, 1), dtype = int)
-
-      # Generate data
-      whole_img = train_df.loc[train_df['ImageId']==list_IDs_temp,'Image'].item()
-      whole_label = train_df.loc[train_df['ImageId']==list_IDs_temp,'ImageLabel'].item()
-      cluster = train_df.loc[train_df['ImageId']==list_IDs_temp,'hsv_cluster'].item()
-      if cluster == 0:
-          whole_img = data_norm.minmax_norm(whole_img)
-      else:
-          whole_img = data_norm.invert_norm(whole_img)
-      height,width,_ = whole_img.shape
-      for i in range(self.batch_size):
-          starth = random.randint(0, height-self.dim_x)
-          startw = random.randint(0, width-self.dim_y)
-          x_img = whole_img[starth:starth+self.dim_x,startw:startw+self.dim_y,:]
-          y_label = whole_label[starth:starth+self.dim_x,startw:startw+self.dim_y]
-          # Store volume
-          X[i, :, :, :] = x_img
-          # Store class
-          y[i,:,:,0] = y_label
+      for j in range(self.batch_image):
+          # Generate data
+          whole_img = train_df.loc[train_df['ImageId']==list_IDs_temp[j],'Image'].item()
+          whole_label = train_df.loc[train_df['ImageId']==list_IDs_temp[j],'ImageLabel'].item()
+          cluster = train_df.loc[train_df['ImageId']==list_IDs_temp[j],'hsv_cluster'].item()
+          if cluster == 0:
+              whole_img = data_norm.minmax_norm(whole_img)
+          else:
+              whole_img = data_norm.invert_norm(whole_img)
+          height,width,_ = whole_img.shape
+          for i in range(self.batch_size//self.batch_image):
+              starth = random.randint(0, height-self.dim_x)
+              startw = random.randint(0, width-self.dim_y)
+              x_img = whole_img[starth:starth+self.dim_x,startw:startw+self.dim_y,:]
+              y_label = whole_label[starth:starth+self.dim_x,startw:startw+self.dim_y]
+              # Store volume
+              X[self.batch_size//self.batch_image*j+i, :, :, :] = x_img
+              # Store class
+              y[self.batch_size//self.batch_image*j+i,:,:,0] = y_label
 
       return X, y
