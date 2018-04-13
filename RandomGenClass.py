@@ -16,7 +16,7 @@ class DataGenerator(object):
       self.dim_y = dim_y
       self.dim_z = dim_z
       self.batch_size = batch_size
-      self.batch_image = 8
+      self.batch_image = batch_image
       self.shuffle = shuffle
 
   def generate(self, list_IDs,train_df):
