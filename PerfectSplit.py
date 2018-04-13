@@ -255,5 +255,7 @@ def newNucleiBinarySplit(mask,thr):
 
 def bianBubian(dot):
     reg = regionprops(dot)[0]
-    return reg.major_axis_length / reg.minor_axis_length
-
+    if reg.minor_axis_length>0:
+        return reg.major_axis_length / reg.minor_axis_length
+    else:
+        return 0
