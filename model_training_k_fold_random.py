@@ -12,7 +12,7 @@ import data_norm
 
 #Train Test Split parameters
 n = 8
-id_num = 'Guo_0411_zoom_stage2_fluo_'+str(n)+'fold'
+id_num = 'Guo_0412_zoom_stage2_fluo_'+str(n)+'fold'
 SEED = 932894
 #Confidence threshold for nuclei identification
 cutoff = 0.5
@@ -73,21 +73,6 @@ def model_fitting(ids,I,train_df):
     ##To release GPU memory by deleting model
     del output_history
     del model
-
-def model_predict(I,Test_data):
-    model = nn_model.model_gen(InputDim)
-    #test data prediction
-    print(str(I)+'th cv model to predict...')
-    model.load_weights(filepath = 'model_'+str(id_num)+'_'+str(I)+'.hdf5')
-    Test_Label_I = []
-    for t in range(Test_data.shape[0]):
-        print(str(t)+'th image is being predicted...')
-        test_x = Test_data.loc[t,'X']
-        pred_test = model.predict(test_x)
-        Test_Label_I.append(pred_test)
-    ##To release GPU memory by deleting model
-    del model
-    return Test_Label_I
 
 for i in range(n):
     print(str(i)+'th run is starting...')
