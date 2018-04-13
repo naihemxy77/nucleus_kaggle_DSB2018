@@ -55,11 +55,11 @@ class DataGenerator(object):
           # Generate data
           whole_img = train_df.loc[train_df['ImageId']==list_IDs_temp[j],'Image'].item()
           whole_label = train_df.loc[train_df['ImageId']==list_IDs_temp[j],'ImageLabel'].item()
-          cluster = train_df.loc[train_df['ImageId']==list_IDs_temp[j],'hsv_cluster'].item()
-          if cluster == 0:
-              whole_img = data_norm.minmax_norm(whole_img)
-          else:
-              whole_img = data_norm.invert_norm(whole_img)
+          #cluster = train_df.loc[train_df['ImageId']==list_IDs_temp[j],'hsv_cluster'].item()
+          #if cluster == 0:
+          whole_img = data_norm.minmax_norm(whole_img)
+          #else:
+              #whole_img = data_norm.invert_norm(whole_img)
           height,width,_ = whole_img.shape
           for i in range(self.batch_size//self.batch_image):
               starth = random.randint(0, height-self.dim_x)
