@@ -18,8 +18,8 @@ cutoff = 0.5
 
 train_df = pickle.load(open("./inputs/train_df_new_extra.p","rb"))
 
+################### set GPU memory, no need for Snyder########
 from keras import backend as K
-# set GPU memory 
 if('tensorflow' == K.backend()):
     import tensorflow as tf
     from keras.backend.tensorflow_backend import set_session
@@ -27,6 +27,8 @@ if('tensorflow' == K.backend()):
     config = tf.ConfigProto()
     config.gpu_options.allow_growth = True
     sess = tf.Session(config=config)
+##############no need for Snyder###############################
+
 random.seed(124335)
 #Fragment parameters
 InputDim = [128,128]
