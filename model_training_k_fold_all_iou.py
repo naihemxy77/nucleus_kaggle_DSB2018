@@ -10,13 +10,13 @@ from sklearn.model_selection import KFold
 import random
 
 #Train Test Split parameters
-n = 8
-id_num = 'Mao_0407_unet_all_iou_300epoch_'+str(n)+'fold'
+n = 5
+id_num = 'Mao_0412_unet_stage2_fluo_'+str(n)+'fold'
 SEED = 932894
 #Confidence threshold for nuclei identification
 cutoff = 0.5
 
-train_df = pickle.load(open("./inputs/train_df.p","rb"))
+train_df = pickle.load(open("./inputs/train_df_new_extra.p","rb"))
 random.seed(124335)
 #Fragment parameters
 InputDim = [128,128]
@@ -26,8 +26,8 @@ Stride = [50,50]
 train_df = train_df
 total_ids = list(train_df['ImageId'].values)
 #If just want to train fluorescent data (similarly, 1 for histo and 2 for bright)
-#train_df = train_df[train_df['hsv_cluster']==0]
-#total_ids = list(train_df.loc[train_df['hsv_cluster']==0,'ImageId'].values)
+train_df = train_df[train_df['hsv_cluster']==0]
+total_ids = list(train_df.loc[train_df['hsv_cluster']==0,'ImageId'].values)
 
 #Split images into cross-fold sets (note that pieces for one image always together belong to train/val set)
 kf = KFold(n_splits=n, shuffle=True, random_state=SEED)
