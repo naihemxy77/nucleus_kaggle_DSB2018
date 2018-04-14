@@ -1,3 +1,4 @@
+# Actually I believe it works for all fluo image with hsv_dominant[2]<0.1
 import numpy as np
 import pandas as pd
 from skimage.exposure import rescale_intensity
