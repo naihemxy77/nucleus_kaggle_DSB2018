@@ -48,6 +48,9 @@ for i in range(test_label_unet.shape[0]):
         
     label_i = sn.aggressiveLabel(img_combined.squeeze())
     final_label.append((unet_id,label_i))
+    test_label_unet = test_label_unet.drop(test_label_unet[test_label_unet.ImageId==unet_id].index)
+    test_label_zoom = test_label_zoom.drop(test_label_zoom[test_label_zoom.ImageId==unet_id].index)
+    test_label_hollow = test_label_hollow.drop(test_label_hollow[test_label_hollow.ImageId==unet_id].index)
 
 final_label = pd.DataFrame(final_label, columns=['ImageId','ImageLabel'])
 pickle.dump(final_label,open( "Average_Three_0414.p","wb" ))
