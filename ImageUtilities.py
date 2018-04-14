@@ -1,8 +1,4 @@
 
-# coding: utf-8
-
-# In[1]:
-
 import numpy as np
 import pandas as pd
 import os
@@ -59,9 +55,14 @@ def idToMaskAll(idstr,pth):
     img0 = plt.imread(pth+idstr+'/images/'+idstr+'.png')
     maskall = np.zeros_like(img0[:,:,0])
     allMasks = os.listdir(pth+idstr+'/masks/')
-    #print(len(allMasks))
+    if '.DS_Store' in allMasks:
+        allMasks.remove('.DS_Store')
+        pass
+    print(len(allMasks))
     for ii in allMasks:
-        maskall+=idToMask(imgID=idstr,maskID=ii.split('.')[0],pth=pth)
+        newMask = idToMask(imgID=idstr,maskID=ii.split('.')[0],pth=pth)
+        xlen,ylen = newMask.shape
+        maskall[:xlen,:ylen]+=newMask#idToMask(imgID=idstr,maskID=ii.split('.')[0],pth=pth)
         pass
     return maskall
 
