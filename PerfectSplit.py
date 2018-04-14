@@ -147,7 +147,10 @@ def aggressiveLabel(mask,thr = 0.036):
     mask0 = label(mask)
     vst = valset(mask0)
     vlstToDel = []
+    Yaoflag = 0
     for val in vst:
+        if np.sum(mask0==val)>8000:
+            flag = 1
         if np.sum(mask0==val)<5:
             vlstToDel.append(val)
             mask0[np.where(mask0==val)]=0
@@ -156,6 +159,8 @@ def aggressiveLabel(mask,thr = 0.036):
     for val in vlstToDel:
         vst.remove(val)
         pass
+    if Yaoflag==1:
+        return split_mask_v1(mask0)
     
     tmpMask = np.zeros_like(mask)
     k = [max(vst)+1]
