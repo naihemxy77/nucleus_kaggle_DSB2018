@@ -20,23 +20,26 @@ cutoff = 0.5
 
 submissionfilename = 'Ensemble_stage2_submission1'
 
-start = int(NNN)*500
-end = min((int(NNN)+1)*500,3019)
+start = int(NNN)*100
+end = min((int(NNN)+1)*100,3019)
 #Best unet
 print('read in best unet results...')
-test_label_unet = pickle.load(open( "../inputs/UnetRes.p","rb" ))
-test_label_unet = pd.DataFrame(test_label_unet, columns=['ImageId','ImageOutput'])
-test_label_unet = test_label_unet.loc[start:end,:]
+test_label_unet_tot = pickle.load(open( "../inputs/UnetRes.p","rb" ))
+test_label_unet_tot = pd.DataFrame(test_label_unet_tot, columns=['ImageId','ImageOutput'])
+test_label_unet = test_label_unet_tot.loc[start:end,:]
+del test_label_unet_tot
 #Best hollow
 print('read in best zoomnet results...')
-test_label_zoom = pickle.load(open( "../inputs/ZoomNetAllRes.p","rb" ))
-test_label_zoom = pd.DataFrame(test_label_zoom, columns=['ImageId','ImageOutput'])
-test_label_zoom = test_label_zoom.loc[start:end,:]
+test_label_zoom_tot = pickle.load(open( "../inputs/ZoomNetAllRes.p","rb" ))
+test_label_zoom_tot = pd.DataFrame(test_label_zoom_tot, columns=['ImageId','ImageOutput'])
+test_label_zoom = test_label_zoom_tot.loc[start:end,:]
+del test_label_zoom_tot
 #Best hollow
 print('read in best hollow results...')
-test_label_hollow = pickle.load(open( "../inputs/ZoomNetHollowRes.p","rb" ))
-test_label_hollow = pd.DataFrame(test_label_hollow, columns=['ImageId','ImageOutput'])
-test_label_hollow = test_label_hollow.loc[start:end,:]
+test_label_hollow_tot = pickle.load(open( "../inputs/ZoomNetHollowRes.p","rb" ))
+test_label_hollow_tot = pd.DataFrame(test_label_hollow_tot, columns=['ImageId','ImageOutput'])
+test_label_hollow = test_label_hollow_tot.loc[start:end,:]
+del test_label_hollow_tot
 
 final_label = []
 for i in list(test_label_unet.index):
