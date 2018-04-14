@@ -162,7 +162,7 @@ def aggressiveLabel(mask,thr = 0.036):
     if len(vst)==0:
         return label(mask)
     if Yaoflag==1:
-        return split_mask_v1(mask0)
+        return label(split_mask_v1(mask0))
     
     tmpMask = np.zeros_like(mask)
     k = [max(vst)+1]
