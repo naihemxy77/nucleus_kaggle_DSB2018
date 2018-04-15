@@ -8,6 +8,9 @@ import pandas as pd
 test_df2 = pd.read_pickle("../inputs/test_df2.p")
 res = test_df2.ImageId
 res = pd.DataFrame(res,columns = ['ImageId'])
+
+del test_df2
+
 baseline = []
 Unet = []
 ZoomNetAll = [] 
