@@ -94,7 +94,7 @@ for i in list(test_label_unet.index):
         pass
     
     if unfinished:
-        label_i = label(img_combined)
+        label_i = label(img_combined.squeeze())
     else:
         label_i = relist[0]
     #label_i = sn.aggressiveLabel(img_combined.squeeze()) 
@@ -104,6 +104,6 @@ for i in list(test_label_unet.index):
     test_label_hollow = test_label_hollow.drop(test_label_hollow[test_label_hollow.ImageId==unet_id].index)
 
 final_label = pd.DataFrame(final_label, columns=['ImageId','ImageLabel'])
-pickle.dump(final_label,open( "Average_Three_0414"+str(NNN)+".p","wb" ))
+pickle.dump(final_label,open( "Average_Three_0415_"+str(NNN)+".p","wb" ))
 
 
