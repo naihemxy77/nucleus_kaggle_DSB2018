@@ -6,8 +6,8 @@
 
 import pandas as pd
 test_df2 = pd.read_pickle("../inputs/test_df2.p")
-res = test_df2.ImageId
-res = pd.DataFrame(res,columns = ['ImageId'])
+restmp = test_df2.ImageId
+restmp = pd.DataFrame(restmp,columns = ['ImageId'])
 
 del test_df2
 
@@ -54,9 +54,20 @@ def getRes(i):
 
 
 # In[12]:
+start=0
+end=3019
 
+def saveForNow(start,i):
+    res = restmp.loc[start:i,:]
+    res['baseline']=baseline
+    res['Unet']=Unet
+    res['ZoomNetAll']=ZoomNetAll
+    res['Hollow']=Hollow
+    res['NewUnet']=NewUnet
+    res['getLocal']=getLocal
+    res.to_pickle('resultOfChoicesTmp.p')
 
-for i in range(0,3019):
+for i in range(start,end):
     dd = getRes(i)
     ll = list(dd)
     baseline.append(ll[0])
@@ -65,11 +76,12 @@ for i in range(0,3019):
     Hollow.append(ll[3])
     NewUnet.append(ll[4])
     getLocal.append(ll[5])
+    saveForNow(start,i)
 
 
 # In[13]:
 
-
+res = restmp.loc[start:end,:]
 res['baseline']=baseline
 res['Unet']=Unet
 res['ZoomNetAll']=ZoomNetAll
