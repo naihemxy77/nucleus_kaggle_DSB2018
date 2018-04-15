@@ -143,7 +143,7 @@ def split_mask_v1(mask):
                 cv2.line(thresh,p1,p2, [0, 0, 0], 2)
     return thresh 
 
-def aggressiveLabel(mask,thr = 0.036):
+def aggressiveLabel(mask,relist,thr = 0.036):
     mask0 = label(mask)
     vst = valset(mask0)
     vlstToDel = []
@@ -160,9 +160,11 @@ def aggressiveLabel(mask,thr = 0.036):
         vst.remove(val)
         pass
     if len(vst)==0:
-        return label(mask)
+        relist.append(mask)
+        return #label(mask)
     if Yaoflag==1:
-        return label(split_mask_v1(mask0))
+        relist.append(label(split_mask_v1(mask0)))
+        return #label(split_mask_v1(mask0))
     
     tmpMask = np.zeros_like(mask)
     k = [max(vst)+1]
@@ -179,7 +181,8 @@ def aggressiveLabel(mask,thr = 0.036):
             pass
         pass
     # find the pixels dropped during split and remerge them 
-    return tmpMask
+    relist.append(tmpMask)
+    return #tmpMask
 
 def reLabel(tmp,maskLabeled,kk,thr):
     newLabeled = newNucleiBinarySplit(maskLabeled,thr=thr)
