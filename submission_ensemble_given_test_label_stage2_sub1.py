@@ -20,8 +20,8 @@ cutoff = 0.5
 
 submissionfilename = 'Ensemble_stage2_submission1'
 
-start = int(NNN)*100
-end = min((int(NNN)+1)*100,3019)
+start = int(NNN)*50
+end = min((int(NNN)+1)*50,3019)
 #Best unet
 print('read in best unet results...')
 test_label_unet_tot = pickle.load(open( "../inputs/UnetRes.p","rb" ))
