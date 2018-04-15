@@ -81,7 +81,7 @@ for i in list(test_label_unet.index):
     manager = multiprocessing.Manager()
     relist = manager.list()
     
-    p = multiprocessing.Process(target=sn.aggressiveLabel,args=(img_combined,relist))
+    p = multiprocessing.Process(target=sn.aggressiveLabel,args=(img_combined.squeeze(),relist))
     p.start()
     
     p.join(60)
