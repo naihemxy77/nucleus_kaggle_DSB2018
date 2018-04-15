@@ -1,6 +1,6 @@
-#import matplotlib
-#matplotlib.use('Agg')
 import sys
+import multiprocessing
+import time
 import numpy as np
 import pandas as pd
 #import matplotlib.pyplot as plt
@@ -11,6 +11,9 @@ import PerfectSplit as sn
 from pathlib import Path
 home = str(Path.home())
 #from GetInput import *
+global unfinished
+unfinished=0
+from skimage.measure import label
 
 NNN = sys.argv[1]
 
@@ -43,6 +46,7 @@ del test_label_hollow_tot
 
 final_label = []
 for i in list(test_label_unet.index):
+    unfinished = 0 ####
     print(str(i)+"th image is being processed...")
     unet_id = test_label_unet.ImageId[i]
 #    zoom_id = test_label_zoom.ImageId[i]
@@ -60,8 +64,40 @@ for i in list(test_label_unet.index):
         img_combined[:5,:5] = 1
     if img_combined.max()==0:
         img_combined[:5,:5] = 1
-        
-    label_i = sn.aggressiveLabel(img_combined.squeeze())
+    
+    try:
+        del manager
+    except NameError:
+        pass
+    try:
+        del p
+    except NameError:
+        pass
+    try:
+        del relist
+    except NameError:
+        pass
+    
+    manager = multiprocessing.Manager()
+    relist = manager.list()
+    
+    p = multiprocessing.Process(target=sn.aggressiveLabel,args=(img_combined,relist))
+    p.start()
+    
+    p.join(60)
+    if p.is_alive():
+        print("running... let's kill it...")
+        # Terminate
+        p.terminate()
+        p.join()
+        unfinished = 1
+        pass
+    
+    if unfinished:
+        label_i = label(img_combined)
+    else:
+        label_i = relist[0]
+    #label_i = sn.aggressiveLabel(img_combined.squeeze()) 
     final_label.append((unet_id,label_i))
     test_label_unet = test_label_unet.drop(test_label_unet[test_label_unet.ImageId==unet_id].index)
     test_label_zoom = test_label_zoom.drop(test_label_zoom[test_label_zoom.ImageId==unet_id].index)
@@ -69,3 +105,5 @@ for i in list(test_label_unet.index):
 
 final_label = pd.DataFrame(final_label, columns=['ImageId','ImageLabel'])
 pickle.dump(final_label,open( "Average_Three_0414"+str(NNN)+".p","wb" ))
+
+
