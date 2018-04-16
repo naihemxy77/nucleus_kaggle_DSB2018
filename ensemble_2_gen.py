@@ -30,19 +30,25 @@ def getLocal(img):
 #    tmp = tmp>threshold_otsu(tmp)
     return tmp
 
+print('load test files...')
 test_df2 = pickle.load(open('./inputs/test_df2.p','rb'))
 test_stage2_ensemble2 = pickle.load(open('./inputs/test_stage2_ensemble2.p','rb'))
 
+print('load base...')
 baseres = pd.read_pickle('./inputs/base_pred_stage2.p')#baseres
-baseres = pd.DataFrame(baseres, columns=['ImageId','ImageOutput'])
+baseres = pd.DataFrame(baseres, columns=['ImageId','ImageLabel'])
+print('load unet...')
 unetres = pd.read_pickle('./inputs/UnetRes.p') #unetres
-unetres = pd.DataFrame(unetres, columns=['ImageId','ImageOutput'])
+unetres = pd.DataFrame(unetres, columns=['ImageId','ImageLabel'])
+print('load zoom...')
 zoomallres = pd.read_pickle('./inputs/ZoomNetAllRes.p') #zoomallres
-zoomallres = pd.DataFrame(zoomallres, columns=['ImageId','ImageOutput'])
+zoomallres = pd.DataFrame(zoomallres, columns=['ImageId','ImageLabel'])
+print('load hollow...')
 hollowres = pd.read_pickle('./inputs/ZoomNetHollowRes.p')#hollowres
-hollowres = pd.DataFrame(hollowres, columns=['ImageId','ImageOutput'])
+hollowres = pd.DataFrame(hollowres, columns=['ImageId','ImageLabel'])
+print('load new...')
 newunetres = pd.read_pickle('./inputs/NewUnetRes.p')#newunet
-newunetres = pd.DataFrame(newunetres, columns=['ImageId','ImageOutput'])
+newunetres = pd.DataFrame(newunetres, columns=['ImageId','ImageLabel'])
 
 
 final_label = []
