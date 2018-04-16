@@ -39,16 +39,24 @@ baseres = pd.read_pickle('./inputs/base_pred_stage2.p')#baseres
 baseres = pd.DataFrame(baseres, columns=['ImageId','ImageLabel'])
 print('load unet...')
 unetres = pd.read_pickle('./inputs/UnetRes.p') #unetres
-unetres = pd.DataFrame(unetres, columns=['ImageId','ImageLabel'])
+unetres.drop(columns=['index'],inplace=True)
+unetres.rename(columns={'ImageOutput':'ImageLabel'},inplace=True)
+#unetres = pd.DataFrame(unetres, columns=['ImageId','ImageLabel'])
 print('load zoom...')
 zoomallres = pd.read_pickle('./inputs/ZoomNetAllRes.p') #zoomallres
-zoomallres = pd.DataFrame(zoomallres, columns=['ImageId','ImageLabel'])
+zoomallres.drop(columns=['index'],inplace=True)
+zoomallres.rename(columns={'ImageOutput':'ImageLabel'},inplace=True)
+#zoomallres = pd.DataFrame(zoomallres, columns=['ImageId','ImageLabel'])
 print('load hollow...')
 hollowres = pd.read_pickle('./inputs/ZoomNetHollowRes.p')#hollowres
-hollowres = pd.DataFrame(hollowres, columns=['ImageId','ImageLabel'])
+hollowres.drop(columns=['index'],inplace=True)
+hollowres.rename(columns={'ImageOutput':'ImageLabel'},inplace=True)
+#hollowres = pd.DataFrame(hollowres, columns=['ImageId','ImageLabel'])
 print('load new...')
 newunetres = pd.read_pickle('./inputs/NewUnetRes.p')#newunet
-newunetres = pd.DataFrame(newunetres, columns=['ImageId','ImageLabel'])
+newunetres.drop(columns=['index'],inplace=True)
+newunetres.rename(columns={'ImageOutput':'ImageLabel'},inplace=True)
+#newunetres = pd.DataFrame(newunetres, columns=['ImageId','ImageLabel'])
 
 
 final_label = []
