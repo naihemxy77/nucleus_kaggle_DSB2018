@@ -33,6 +33,7 @@ def getLocal(img):
 test_df2 = pd.read_pickle('./inputs/test_df2.p')
 test_stage2_ensemble2 = pd.read_pickle('./inputs/test_stage2_ensemble2.p')
 
+predList = [0,0,0,0,0]
 def readAll():
     predList[0] = pd.read_pickle('./inputs/base_pred_stage2.p')#baseres
     predList[1] = pd.read_pickle('./inputs/UnetRes.p') #unetres
