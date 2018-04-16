@@ -1,4 +1,10 @@
+# coding: utf-8
+
+# In[1]:
+
+
 ##reference: https://www.kaggle.com/voglinio/separating-nuclei-masks-using-convexity-defects
+#get_ipython().magic('matplotlib inline')
 import numpy as np 
 import pandas as pd 
 import os
@@ -137,11 +143,14 @@ def split_mask_v1(mask):
                 cv2.line(thresh,p1,p2, [0, 0, 0], 2)
     return thresh 
 
-def aggressiveLabel(mask,thr = 0.036):
+def aggressiveLabel(mask,relist,thr = 0.036):
     mask0 = label(mask)
     vst = valset(mask0)
     vlstToDel = []
+    Yaoflag = 0
     for val in vst:
+        if np.sum(mask0==val)>8000:
+            Yaoflag = 1
         if np.sum(mask0==val)<5:
             vlstToDel.append(val)
             mask0[np.where(mask0==val)]=0
@@ -151,7 +160,12 @@ def aggressiveLabel(mask,thr = 0.036):
         vst.remove(val)
         pass
     if len(vst)==0:
-        return label(mask) 
+        relist.append(mask)
+        return #label(mask)
+    if Yaoflag==1:
+        relist.append(label(split_mask_v1(mask0)))
+        return #label(split_mask_v1(mask0))
+    
     tmpMask = np.zeros_like(mask)
     k = [max(vst)+1]
     for i in vst:
@@ -167,7 +181,8 @@ def aggressiveLabel(mask,thr = 0.036):
             pass
         pass
     # find the pixels dropped during split and remerge them 
-    return tmpMask
+    relist.append(tmpMask)
+    return #tmpMask
 
 def reLabel(tmp,maskLabeled,kk,thr):
     newLabeled = newNucleiBinarySplit(maskLabeled,thr=thr)
@@ -250,4 +265,17 @@ def newNucleiBinarySplit(mask,thr):
 
 def bianBubian(dot):
     reg = regionprops(dot)[0]
-    return reg.major_axis_length / reg.minor_axis_length
+    if reg.minor_axis_length>0:
+        return reg.major_axis_length / reg.minor_axis_length
+    else:
+        return 0
+
+def avgArea(mask):
+    lbs = label(mask)
+    vlst = valset(lbs)
+    #areas = []
+    #for ii in vlst:
+    #    areas.append(np.sum(getLabeled(lbs,ii)))
+    #    pass
+    #return np.median(areas)
+    return len(vlst)
