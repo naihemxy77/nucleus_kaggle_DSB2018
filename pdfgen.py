@@ -76,50 +76,50 @@ readAll(start,end)
 baseres,unetres,zoomallres,hollowres,newunetres = predList
 
 with PdfPages('stage2_pred_comparison_all'+str(start)+'.pdf') as pdf:
-    for NN in range(tot_num//r_n+1):
-        print('Page '+str(NN)+' is generating...')
-        fig,ax = plt.subplots(r_n,c_n,figsize=(10,15))
-        for r in range(r_n):
-            if img_index < tot_num:
-                #Image Information               
-                img = test_df2.loc[img_index,'Image'][:,:,:3]
-                img_id = test_df2.loc[img_index,'ImageId']
-                npp = Need_NPP.loc[Need_NPP.ImageId==img_id,'NPP'].item()
-                if test_df2.loc[test_df2.ImageId==img_id,'hsv_cluster'].item()==0:
-                    img = minmax_norm(img)
-                else:
-                    img = invert_norm(img)
-                
-                
-                #Predictions from different models
-                mask0 = baseres.loc[baseres.ImageId==img_id,'ImageLabel'].item().squeeze()
-                mask1 = unetres.loc[unetres.ImageId==img_id,'ImageLabel'].item().squeeze()
-                mask2 = zoomallres.loc[zoomallres.ImageId==img_id,'ImageLabel'].item().squeeze()
-                mask3 = hollowres.loc[hollowres.ImageId==img_id,'ImageLabel'].item().squeeze()
-                mask4 = newunetres.loc[newunetres.ImageId==img_id,'ImageLabel'].item().squeeze()
-                mask5 = getLocal(img)
-                #Image iter
-                img_index = img_index+1
-                
-                #Show Ma Ge's Pan Duan
-                ax[r,0].set_ylabel(str(npp))
-                #Show all modeling results
-                ax[r,0].imshow(mask0)
-                ax[r,1].imshow(mask1)
-                ax[r,2].imshow(mask2)
-                ax[r,3].imshow(mask3)
-                ax[r,4].imshow(mask4)
-                ax[r,5].imshow(mask5)
-                #Show original images (in the last column)
-                ax[r,6].imshow(img)
-                ax[r,6].set_ylabel('Index: '+str(img_index-1))
-                ax[r,6].yaxis.set_label_position("right")
-                #Axis/title settings
-                for c in range(c_n):
-                    ax[r,c].get_xaxis().set_ticks([])
-                    ax[r,c].get_yaxis().set_ticks([])
-            if r == 0:
-                for kk in range(len(plots_name)):
-                    ax[r,kk].set_title(plots_name[kk])
-        pdf.savefig()  # saves the current figure into a pdf page
-        plt.close()
+#    for NN in range(tot_num//r_n+1):
+#        print('Page '+str(NN)+' is generating...')
+    fig,ax = plt.subplots(r_n,c_n,figsize=(10,15))
+    for r in range(r_n):
+        if img_index < tot_num:
+            #Image Information               
+            img = test_df2.loc[img_index,'Image'][:,:,:3]
+            img_id = test_df2.loc[img_index,'ImageId']
+            npp = Need_NPP.loc[Need_NPP.ImageId==img_id,'NPP'].item()
+            if test_df2.loc[test_df2.ImageId==img_id,'hsv_cluster'].item()==0:
+                img = minmax_norm(img)
+            else:
+                img = invert_norm(img)
+            
+            
+            #Predictions from different models
+            mask0 = baseres.loc[baseres.ImageId==img_id,'ImageLabel'].item().squeeze()
+            mask1 = unetres.loc[unetres.ImageId==img_id,'ImageLabel'].item().squeeze()
+            mask2 = zoomallres.loc[zoomallres.ImageId==img_id,'ImageLabel'].item().squeeze()
+            mask3 = hollowres.loc[hollowres.ImageId==img_id,'ImageLabel'].item().squeeze()
+            mask4 = newunetres.loc[newunetres.ImageId==img_id,'ImageLabel'].item().squeeze()
+            mask5 = getLocal(img)
+            #Image iter
+            img_index = img_index+1
+            
+            #Show Ma Ge's Pan Duan
+            ax[r,0].set_ylabel(str(npp))
+            #Show all modeling results
+            ax[r,0].imshow(mask0)
+            ax[r,1].imshow(mask1)
+            ax[r,2].imshow(mask2)
+            ax[r,3].imshow(mask3)
+            ax[r,4].imshow(mask4)
+            ax[r,5].imshow(mask5)
+            #Show original images (in the last column)
+            ax[r,6].imshow(img)
+            ax[r,6].set_ylabel('Index: '+str(img_index-1))
+            ax[r,6].yaxis.set_label_position("right")
+            #Axis/title settings
+            for c in range(c_n):
+                ax[r,c].get_xaxis().set_ticks([])
+                ax[r,c].get_yaxis().set_ticks([])
+        if r == 0:
+            for kk in range(len(plots_name)):
+                ax[r,kk].set_title(plots_name[kk])
+    pdf.savefig()  # saves the current figure into a pdf page
+    plt.close()
