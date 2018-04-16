@@ -30,21 +30,20 @@ def getLocal(img):
 #    tmp = tmp>threshold_otsu(tmp)
     return tmp
 
-test_df2 = pd.read_pickle('./inputs/test_df2.p')
-test_stage2_ensemble2 = pd.read_pickle('./inputs/test_stage2_ensemble2.p')
+test_df2 = pickle.load(open('./inputs/test_df2.p','rb'))
+test_stage2_ensemble2 = pickle.load(open('./inputs/test_stage2_ensemble2.p','rb'))
 
-predList = [0,0,0,0,0]
-def readAll():
-    predList[0] = pd.read_pickle('./inputs/base_pred_stage2.p')#baseres
-    predList[1] = pd.read_pickle('./inputs/UnetRes.p') #unetres
-    predList[2] = pd.read_pickle('./inputs/ZoomNetAllRes.p') #zoomallres
-    predList[3] = pd.read_pickle('./inputs/ZoomNetHollowRes.p')#hollowres
-    predList[4] = pd.read_pickle('./inputs/NewUnetRes.p')#newunet
+baseres = pd.read_pickle('./inputs/base_pred_stage2.p')#baseres
+baseres = pd.DataFrame(baseres, columns=['ImageId','ImageOutput'])
+unetres = pd.read_pickle('./inputs/UnetRes.p') #unetres
+unetres = pd.DataFrame(unetres, columns=['ImageId','ImageOutput'])
+zoomallres = pd.read_pickle('./inputs/ZoomNetAllRes.p') #zoomallres
+zoomallres = pd.DataFrame(zoomallres, columns=['ImageId','ImageOutput'])
+hollowres = pd.read_pickle('./inputs/ZoomNetHollowRes.p')#hollowres
+hollowres = pd.DataFrame(hollowres, columns=['ImageId','ImageOutput'])
+newunetres = pd.read_pickle('./inputs/NewUnetRes.p')#newunet
+newunetres = pd.DataFrame(newunetres, columns=['ImageId','ImageOutput'])
 
-
-readAll()
-
-baseres,unetres,zoomallres,hollowres,newunetres = predList
 
 final_label = []
 for img_index in range(test_df2.shape[0]):          
@@ -74,6 +73,14 @@ for img_index in range(test_df2.shape[0]):
     
     new_mask = ( mask0*w0 + mask1*w1 + mask2*w2 +mask3*w3 + mask4*w4 +mask5*w5 ) / denominator
     
+    if np.max(new_mask) > 1:
+        print(str(img_index)+' has pixels more than 1 intensity....')
+        break
+    if np.min(new_mask) < 0:
+        print(str(img_index)+' has pixels less than 0 intensity....')
+        break
+    
+    new_mask = np.where(new_mask>0.5,1,0)
     final_label.append((img_id,new_mask))
 
 test_pred_stage2_ensemble2 = pd.DataFrame(final_label, columns=['ImageId','ImageLabel'])
